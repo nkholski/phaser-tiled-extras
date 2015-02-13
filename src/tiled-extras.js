@@ -53,15 +53,13 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
       // detectAnchorOnly
       if (objectBounds.anchorX < map.triggers[i].x1 && objectBounds.anchorX > map.triggers[i].x0 && objectBounds.anchorY < map.triggers[i].y1 && objectBounds.anchorY > map.triggers[i].y0) {
         map.triggers[i].trigged = true;
-        map.triggers[i].endorsed = true;
+        map.triggers[i].endorsers +=1;
         triggers[map.triggers[i].function](map.triggers[i], object);
-      } else if (map.triggers[i].wasTrigged && !map.triggers[i].endorsed) {
+      } else if (map.triggers[i].wasTrigged && map.triggers[i].endorsers === 0) {
         map.triggers[i].trigged = false;
         triggers[map.triggers[i].function](map.triggers[i], object);
       }
-      if (map.triggers[i].trigged || (!map.triggers[i].endorsed && !map.triggers[i].trigged)) {
-        map.triggers[i].wasTrigged = map.triggers[i].trigged;
-      }
+
     }
   }
 }
@@ -96,36 +94,6 @@ Phaser.Physics.Arcade.prototype.constructor = Phaser.Physics.Arcade;
 }*/
 
 
-var triggers = {
-  replaceTiles: function(trigger, x, y) {
-    if (trigger.trigged === trigger.wasTrigged) {
-      return;
-    }
-    var coords = map.triggers[0].arguments.box.split(",");
-    coords = coords.map(function(x) {
-      return parseInt(x, 10);
-    });
-    if (trigger.trigged) {
-
-      for (tx = coords[0] - 1; tx < (coords[0] - 1 + coords[2]); tx++) {
-        for (ty = coords[1] - 1; ty < (coords[1] - 1 + coords[3]); ty++) {
-          trigger.originalTile = map.getTile(tx, ty, layers[0]);
-          map.putTile(21, tx, ty);
-        }
-      }
-    } else {
-      for (tx = coords[0] - 1; tx < (coords[0] - 1 + coords[2]); tx++) {
-        for (ty = coords[1] - 1; ty < (coords[1] - 1 + coords[3]); ty++) {
-          map.putTile(trigger.originalTile, tx, ty);
-        }
-      }
-    }
-  }
-
-
-
-
-}
 
 var triggerPlugin = {
   init: function(map) {
@@ -137,6 +105,11 @@ var triggerPlugin = {
       args = "";
     map.triggers = [];
     for (var i = 0, len = triggers.length; i < len; i++) {
+      if(!triggers[i].properties.function){
+        console.log("Error: No function for trigger at "+triggers[i].x+","+triggers[i].y);
+        continue;
+      }
+
       args = {};
       argNames = Object.keys(triggers[i].properties);
 
@@ -165,7 +138,7 @@ var triggerPlugin = {
         y1: triggers[i].y + triggers[i].height,
         trigged: false,
         wasTrigged: false,
-        endorsed: false,
+        endorsers: 0,
         detectAnchorOnly: triggers[i].properties.detectAnchorOnly
       });
 
@@ -287,8 +260,10 @@ Phaser.Plugin.TiledExtras.prototype.update = function() {
   //triggerPlugin.triggerChk(map, ship.x, ship.y);
 };
 Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
-  // Reset endorsed. Endorsed prevents triggers to be untrigged by any object as long at at least one other still triggers it.
   for (var i in map.triggers) {
-    map.triggers[i].endorsed = false;
+    console.log(map.triggers[i].endorsers)
+    triggers[map.triggers[i].function](map.triggers[i],null,true);
+    map.triggers[i].wasTrigged = map.triggers[i].trigged;
+    map.triggers[i].endorsers = 0;
   }
 }
