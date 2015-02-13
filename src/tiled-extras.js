@@ -26,6 +26,14 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
   */
   var offset, objectArray, objectBounds;
 
+  if (!this.hasOwnProperty("triggers")) {
+    console.log("checkTriggers called before defineTriggers!");
+    return;
+  }
+  if (!this.triggers) {
+    return;
+  }
+
   switch (object.type) {
     case 0: // Sprite
       offset = {
@@ -55,15 +63,32 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
     }
 
 
-    for (var i in map.triggers) {
+    for (var i in this.triggers) {
+      // Skip if object is unable to trigger this trigger
+      if (this.triggers[i].required) {
+        if (object.hasOwnProperty(this.triggers[i].required.property)) {
+          if (object[this.triggers[i].required.property] !== this.triggers[i].required.value) {
+            continue;
+          }
+        }
+      }
+      if (this.triggers[i].forbidden) {
+        if (object.hasOwnProperty(this.triggers[i].forbidden.property)) {
+          if (object[this.triggers[i].forbidden.property] === this.triggers[i].forbidden.value) {
+            continue;
+          }
+        }
+      }
+
+
       // detectAnchorOnly
-      if (objectBounds.anchorX < map.triggers[i].x1 && objectBounds.anchorX > map.triggers[i].x0 && objectBounds.anchorY < map.triggers[i].y1 && objectBounds.anchorY > map.triggers[i].y0) {
-        map.triggers[i].trigged = true;
-        map.triggers[i].endorsers += 1;
-        triggers[map.triggers[i].function](map.triggers[i], object);
-      } else if (map.triggers[i].wasTrigged && map.triggers[i].endorsers === 0) {
-        map.triggers[i].trigged = false;
-        triggers[map.triggers[i].function](map.triggers[i], object);
+      if (objectBounds.anchorX < this.triggers[i].x1 && objectBounds.anchorX > this.triggers[i].x0 && objectBounds.anchorY < this.triggers[i].y1 && objectBounds.anchorY > this.triggers[i].y0) {
+        this.triggers[i].trigged = true;
+        this.triggers[i].endorsers += 1;
+        triggers[this.triggers[i].function](this.triggers[i], object);
+      } else if (this.triggers[i].wasTrigged && this.triggers[i].endorsers === 0) {
+        this.triggers[i].trigged = false;
+        triggers[this.triggers[i].function](this.triggers[i], object);
       }
 
     }
@@ -74,14 +99,17 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
 
 Phaser.Tilemap.prototype.defineTriggers = function() {
   if (!this.objects.hasOwnProperty("triggers")) {
+    this.triggers = null;
     return;
   }
-  var triggers = this.objects.triggers,
-    args = "";
   this.triggers = [];
+  var triggers = this.objects.triggers,
+    args, argNames, forbidden = null,
+    required = null;
+
   for (var i = 0, len = triggers.length; i < len; i++) {
     if (!triggers[i].properties.function) {
-      console.log("Error: No function for trigger at " + triggers[i].x + "," + triggers[i].y);
+      console.log("Error: No function for trigger starting at x=" + triggers[i].x + ", y=" + triggers[i].y);
       continue;
     }
 
@@ -89,9 +117,18 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
     argNames = Object.keys(triggers[i].properties);
 
     for (var i2 in argNames) {
-      if (argNames[i2] !== "function") {
+      if (argNames[i2] !== "function" && argNames[i2] !== "required" && argNames[i2] !== "forbidden") {
         args[argNames[i2]] = triggers[i].properties[argNames[i2]];
       }
+    }
+
+    if (triggers[i].properties.hasOwnProperty("forbidden")) { // Räcker med bara required?!
+      forbidden = triggers[i].properties.forbidden.split("="); // <= >= === == = < > !=
+      forbidden = {
+        property: forbidden[0],
+        value: (forbidden[1] === "true") ? true : ((forbidden[1] === "false") ? false : forbidden[1])
+      }
+
     }
 
     if (triggers[i].properties.hasOwnProperty("detectAnchorOnly")) {
@@ -114,8 +151,13 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
       trigged: false,
       wasTrigged: false,
       endorsers: 0,
-      detectAnchorOnly: triggers[i].properties.detectAnchorOnly
+      detectAnchorOnly: triggers[i].properties.detectAnchorOnly,
+      forbidden: forbidden,
+      required: required
     });
+  }
+  if (this.triggers.length === 0) {
+    this.triggers = null;
   }
 }
 
@@ -148,7 +190,7 @@ Phaser.TilemapLayer.prototype.updateCollision = function(area, clear) {
         continue;
       }
 
-      if(clear){
+      if (clear) {
         tile.collideUp = false;
         tile.collideRight = false;
         tile.collideDown = false;
@@ -162,7 +204,6 @@ Phaser.TilemapLayer.prototype.updateCollision = function(area, clear) {
       }
 
       if (tile.properties.hasOwnProperty("collideAll") && tile.properties.collideAll === "true") {
-
         tempCol = [true, true, true, true];
       }
 
@@ -215,20 +256,9 @@ Phaser.TilemapLayer.prototype.updateCollision = function(area, clear) {
 
 
 Phaser.Plugin.TiledExtras = function(game, parent) {
-  this.collisionsInitiated = false;
 };
-
-//	Extends the Phaser.Plugin template, setting up values we need
 Phaser.Plugin.TiledExtras.prototype = Object.create(Phaser.Plugin.prototype);
 Phaser.Plugin.TiledExtras.prototype.constructor = Phaser.Plugin.TiledExtras;
-
-/**
- * This is run when the plugins update during the core game loop.
- */
-Phaser.Plugin.TiledExtras.prototype.update = function() {
-
-  //triggerPlugin.triggerChk(map, ship.x, ship.y);
-};
 Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
   if (map.hasOwnProperty("triggers")) {
     for (var i in map.triggers) {
