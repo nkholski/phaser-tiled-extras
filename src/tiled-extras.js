@@ -10,6 +10,14 @@ Callback för tiles
 
  */
 
+
+/*
+
+ SNYGGARE:
+ Phaser.Physics.Arcade.prototype.constructor = Phaser.Physics.Arcade;
+ Phaser.Physics.Arcade.prototype = {
+}*/
+
 Phaser.Tilemap.prototype.checkTriggers = function(object) {
   /* Object:
   Sprite
@@ -28,13 +36,11 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
     case 7: // Group
       offset = {
         x: object.x,
-      y: object.y
+        y: object.y
       };
       objectArray = object.children;
       break;
   }
-
-
 
   for (var o in objectArray) {
     object = objectArray[o];
@@ -53,7 +59,7 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
       // detectAnchorOnly
       if (objectBounds.anchorX < map.triggers[i].x1 && objectBounds.anchorX > map.triggers[i].x0 && objectBounds.anchorY < map.triggers[i].y1 && objectBounds.anchorY > map.triggers[i].y0) {
         map.triggers[i].trigged = true;
-        map.triggers[i].endorsers +=1;
+        map.triggers[i].endorsers += 1;
         triggers[map.triggers[i].function](map.triggers[i], object);
       } else if (map.triggers[i].wasTrigged && map.triggers[i].endorsers === 0) {
         map.triggers[i].trigged = false;
@@ -64,182 +70,146 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
   }
 }
 
-Phaser.Sprite.prototype.checkTriggers = function() {
-  console.log(this);
+
+
+Phaser.Tilemap.prototype.defineTriggers = function() {
+  if (!this.objects.hasOwnProperty("triggers")) {
+    return;
+  }
+  var triggers = this.objects.triggers,
+    args = "";
+  this.triggers = [];
+  for (var i = 0, len = triggers.length; i < len; i++) {
+    if (!triggers[i].properties.function) {
+      console.log("Error: No function for trigger at " + triggers[i].x + "," + triggers[i].y);
+      continue;
+    }
+
+    args = {};
+    argNames = Object.keys(triggers[i].properties);
+
+    for (var i2 in argNames) {
+      if (argNames[i2] !== "function") {
+        args[argNames[i2]] = triggers[i].properties[argNames[i2]];
+      }
+    }
+
+    if (triggers[i].properties.hasOwnProperty("detectAnchorOnly")) {
+      if (triggers[i].properties.detectAnchorOnly !== "false") {
+        triggers[i].properties.detectAnchorOnly = true;
+      }
+    } else {
+      triggers[i].properties.detectAnchorOnly = false;
+    }
+
+    this.triggers.push({
+      function: triggers[i].properties.function,
+      arguments: args,
+      x0: triggers[i].x,
+      y0: triggers[i].y,
+      width: triggers[i].width,
+      height: triggers[i].height,
+      x1: triggers[i].x + triggers[i].width,
+      y1: triggers[i].y + triggers[i].height,
+      trigged: false,
+      wasTrigged: false,
+      endorsers: 0,
+      detectAnchorOnly: triggers[i].properties.detectAnchorOnly
+    });
+  }
 }
 
-Phaser.World.prototype.checkTriggers = function() {
-  console.log(this);
-  console.log("YES")
-}
+Phaser.TilemapLayer.prototype.updateCollision = function(area, clear) {
+  var tile, dirs = ["Up", "Right", "Down", "Left"];
+  var tempCol = [false, false, false, false];
 
-//    this.tiledExtras.checkTriggers(sprite);
-
-/*
-{
-
-Phaser.Physics.Arcade.prototype.constructor = Phaser.Physics.Arcade;
- Phaser.Physics.Arcade.prototype = {
-
-
-
-  skrivut: function(){
-    console.log(this);
-
-
+  if (area) {
+    a = {
+      x: area.x,
+      y: area.y,
+      x1: area.x + area.width,
+      y1: area.y + area.height
+    };
+  } else {
+    a = {
+      x: 0,
+      y: 0,
+      x1: this.map.width,
+      y1: this.map.height
+    };
   }
 
+  for (var y = a.y; y < a.y1; y++) {
+    for (var x = a.x; x < a.x1; x++) {
+      tempCol = [false, false, false, false];
+      tile = this.map.getTile(x, y, this);
 
-
-}*/
-
-
-
-var triggerPlugin = {
-  init: function(map) {
-    if (!map.objects.hasOwnProperty("triggers")) {
-      return;
-    }
-    console.log("TRIGGI");
-    var triggers = map.objects.triggers,
-      args = "";
-    map.triggers = [];
-    for (var i = 0, len = triggers.length; i < len; i++) {
-      if(!triggers[i].properties.function){
-        console.log("Error: No function for trigger at "+triggers[i].x+","+triggers[i].y);
+      if (!tile) {
         continue;
       }
 
-      args = {};
-      argNames = Object.keys(triggers[i].properties);
+      if(clear){
+        tile.collideUp = false;
+        tile.collideRight = false;
+        tile.collideDown = false;
+        tile.collideLeft = false;
+        tile.collides = false;
+        tile.faceTop = false;
+        tile.faceRight = false;
+        tile.faceBottom = false;
+        tile.faceLeft = false;
+        continue;
+      }
 
-      for (var i2 in argNames) {
-        if (argNames[i2] !== "function") {
-          args[argNames[i2]] = triggers[i].properties[argNames[i2]];
+      if (tile.properties.hasOwnProperty("collideAll") && tile.properties.collideAll === "true") {
+
+        tempCol = [true, true, true, true];
+      }
+
+      for (var i = 0; i < 4; i++) {
+        if (tile.properties.hasOwnProperty("collide" + dirs[i])) {
+          if (tile.properties["collide" + dirs[i]] === "true") {
+            tempCol[i] = true;
+          } else {
+            tempCol[i] = false;
+          }
         }
       }
 
-      if (triggers[i].properties.hasOwnProperty("detectAnchorOnly")) {
-        if (triggers[i].properties.detectAnchorOnly !== "false") {
-          triggers[i].properties.detectAnchorOnly = true;
+      if (tile.flipped) {
+        tempCol = [tempCol[0], tempCol[3], tempCol[2], tempCol[1]];
+      }
+
+      if (tile.rotation > 0) {
+        switch (Math.round(2 * tile.rotation / Math.PI)) {
+
+          case 1:
+            tempCol = [tempCol[3], tempCol[0], tempCol[1], tempCol[2]];
+            break;
+          case 2:
+            tempCol = [tempCol[2], tempCol[3], tempCol[0], tempCol[1]];
+            break;
+          case 3:
+            tempCol = [tempCol[1], tempCol[2], tempCol[3], tempCol[0]];
+            break;
         }
-      } else {
-        triggers[i].properties.detectAnchorOnly = false;
       }
 
-      map.triggers.push({
-        function: triggers[i].properties.function,
-        arguments: args,
-        x0: triggers[i].x,
-        y0: triggers[i].y,
-        width: triggers[i].width,
-        height: triggers[i].height,
-        x1: triggers[i].x + triggers[i].width,
-        y1: triggers[i].y + triggers[i].height,
-        trigged: false,
-        wasTrigged: false,
-        endorsers: 0,
-        detectAnchorOnly: triggers[i].properties.detectAnchorOnly
-      });
 
+      tile.collideUp = tempCol[0];
+      tile.collideRight = tempCol[1];
+      tile.collideDown = tempCol[2];
+      tile.collideLeft = tempCol[3];
+      tile.collides = tempCol[0] || tempCol[1] || tempCol[2] || tempCol[3];
+      tile.faceTop = tempCol[0];
+      tile.faceRight = tempCol[1];
+      tile.faceBottom = tempCol[2];
+      tile.faceLeft = tempCol[3];
 
-    }
-
-
-  },
-  triggerChk: function(map, x, y) {
-    for (var i in map.triggers) {
-
-      // detectAnchorOnly
-      if (x < map.triggers[i].x1 && x > map.triggers[i].x0 && y < map.triggers[i].y1 && y > map.triggers[i].y0) {
-        map.triggers[i].trigged = true;
-        triggers[map.triggers[i].function](map.triggers[i], x, y);
-      } else if (map.triggers[i].wasTrigged) {
-        map.triggers[i].trigged = false;
-        triggers[map.triggers[i].function](map.triggers[i], x, y);
-      }
-      map.triggers[i].wasTrigged = map.triggers[i].trigged;
     }
   }
+
 }
-
-
-
-
-
-
-var tiledExtras = {
-
-  updateCollision: function(layers) { // om layer är lager och inte array => layers= [layers];
-    var layer, tile, dirs = ["Up", "Right", "Down", "Left"];
-    var tempCol = [false, false, false, false];
-
-    for (var i in layers) {
-      layer = layers[i];
-      //if(map.layers[i][i]!==)
-      for (var y = 0; y < layer.map.height; y++) {
-        for (var x = 0; x < layer.map.width; x++) {
-          tempCol = [false, false, false, false];
-          tile = layers[0].map.getTile(x, y, layers[0]);
-
-          if (!tile) {
-            continue;
-          }
-
-          if (tile.properties.hasOwnProperty("collideAll") && tile.properties.collideAll === "true") {
-
-            tempCol = [true, true, true, true];
-          }
-
-          for (var i = 0; i < 4; i++) {
-            if (tile.properties.hasOwnProperty("collide" + dirs[i])) {
-              if (tile.properties["collide" + dirs[i]] === "true") {
-                tempCol[i] = true;
-              } else {
-                tempCol[i] = false;
-              }
-            }
-          }
-
-          if (tile.flipped) {
-            tempCol = [tempCol[0], tempCol[3], tempCol[2], tempCol[1]];
-          }
-
-          if (tile.rotation > 0) {
-            switch (Math.round(2 * tile.rotation / Math.PI)) {
-
-              case 1:
-                tempCol = [tempCol[3], tempCol[0], tempCol[1], tempCol[2]];
-                break;
-              case 2:
-                tempCol = [tempCol[2], tempCol[3], tempCol[0], tempCol[1]];
-                break;
-              case 3:
-                tempCol = [tempCol[1], tempCol[2], tempCol[3], tempCol[0]];
-                break;
-            }
-          }
-
-
-          tile.collideUp = tempCol[0];
-          tile.collideRight = tempCol[1];
-          tile.collideDown = tempCol[2];
-          tile.collideLeft = tempCol[3];
-          tile.collides = tempCol[0] || tempCol[1] || tempCol[2] || tempCol[3];
-          tile.faceTop = tempCol[0];
-          tile.faceRight = tempCol[1];
-          tile.faceBottom = tempCol[2];
-          tile.faceLeft = tempCol[3];
-
-
-        }
-
-      }
-
-    }
-
-  },
-};
 
 
 
@@ -260,10 +230,11 @@ Phaser.Plugin.TiledExtras.prototype.update = function() {
   //triggerPlugin.triggerChk(map, ship.x, ship.y);
 };
 Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
-  for (var i in map.triggers) {
-    console.log(map.triggers[i].endorsers)
-    triggers[map.triggers[i].function](map.triggers[i],null,true);
-    map.triggers[i].wasTrigged = map.triggers[i].trigged;
-    map.triggers[i].endorsers = 0;
+  if (map.hasOwnProperty("triggers")) {
+    for (var i in map.triggers) {
+      triggers[map.triggers[i].function](map.triggers[i], null, true);
+      map.triggers[i].wasTrigged = map.triggers[i].trigged;
+      map.triggers[i].endorsers = 0;
+    }
   }
 }

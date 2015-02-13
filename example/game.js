@@ -15,7 +15,7 @@ var layers = [];
 var cursors;
 
 function create() {
-  game.add.plugin(Phaser.Plugin.TiledExtras);
+    game.add.plugin(Phaser.Plugin.TiledExtras);
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     game.stage.backgroundColor = '#2d2d2d';
@@ -27,8 +27,12 @@ function create() {
     layers[0] = map.createLayer('Tile Layer 1');
     layers[1] = map.createLayer('Tile Layer 2');
 
-    tiledExtras.updateCollision(layers);
-    triggerPlugin.init(map);
+    layers[0].updateCollision();
+    layers[1].updateCollision();
+
+
+    //tiledExtras.updateCollision(layers);
+    map.defineTriggers();
     layers[0].resizeWorld();
 
     //  Convert the tilemap layer into bodies. Only tiles that collide (see above) are created.
