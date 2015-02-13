@@ -37,8 +37,18 @@ function create() {
     //game.physics.arcade.convertTilemap(map, layers[0]);
 
     ship = game.add.sprite(200, 200, 'ship');
+    auto = game.add.sprite(20, 20, 'ship');
+
+
     this.game.physics.enable(ship);
     ship.body.allowGravity = true;
+
+    this.game.physics.enable(auto);
+    auto.body.velocity.x=50;
+
+    spriteGroup = game.add.group();
+    spriteGroup.add(ship);
+    spriteGroup.add(auto);
     //game.physics.arcade.enable(ship);
 
     game.camera.follow(ship);
@@ -78,6 +88,7 @@ function update() {
 
     if (cursors.up.isDown)
     {
+
       ship.body.velocity.y=-100;
     }
     else if (cursors.down.isDown)
@@ -90,8 +101,19 @@ function update() {
 
     }
 
+    if (cursors.up.isDown && cursors.down.isDown)
+    {
+      auto.x=20;
+      auto.body.velocity.x = 70;
+    }
+
+    this.physics.arcade.collide(auto, layers[0]);
+
     this.physics.arcade.collide(ship, layers[0]);
 
     this.physics.arcade.collide(ship, layers[1]);
+    //map.checkTriggers(ship);
+    //map.checkTriggers(auto);
+    map.checkTriggers(spriteGroup);
 
 }
