@@ -6,6 +6,7 @@ function preload() {
     game.load.tilemap('map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.image('tileset', 'assets/tileset.png');
     game.load.image('ship', 'assets/ship.png');
+    game.load.image('marioClouds', 'assets/Mario_Clouds_small.jpg');
 
 }
 
@@ -23,6 +24,8 @@ function create() {
     map = game.add.tilemap('map');
 
     map.addTilesetImage('tileset');
+
+    map.addImageLayer(null, "marioClouds");
 
     layers[0] = map.createLayer('Tile Layer 1');
     layers[1] = map.createLayer('Tile Layer 2');
