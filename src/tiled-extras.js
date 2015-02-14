@@ -51,7 +51,7 @@ Phaser.Triggers = {
 }
 
 
-Phaser.Tilemap.prototype.addImageLayer = function(layerName, imageKey) {
+Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
   var layers = this.game.cache._tilemaps[map.key].data.layers;
   var game = this.game;
   var responseObjects = [];
@@ -63,18 +63,21 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, imageKey) {
   for (var i in layers) {
     if (layers[i].type === "imagelayer") {
       if (!layerName || layerName === layers[i].name) {
-        console.log(layers[i]);
-        if (imageKey) {
-          image = game.cache._images[imageKey];
-
+        if (definedImageKey) {
+          imageKey = definedImageKey;
         } else {
-          // 1. Check if image key === layer name
-          // 2. Check if image filename === layer image filename
+          // 1. Check if properties.key
+          if(layers[i].properties.hasOwnProperty("key")){
+            imageKey = layers[i].properties.key;
+            console.log(imageKey);
+          }
+          // 2. Check if image key === layer name
+
+          // 3. Check if image filename === layer image filename
         }
+        image = game.cache._images[imageKey];
 
-
-
-        object = game.add.tileSprite(layers[i].x, layers[i].y, game.cache._images[imageKey].data.width, game.cache._images[imageKey].data.height, imageKey);
+        object = game.add.tileSprite(layers[i].x, layers[i].y, image.data.width, image.data.height, imageKey);
 
         object.posFixedToCamera = {
           x: false,
@@ -83,6 +86,10 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, imageKey) {
         object.relativePosition = {
           x: object.x,
           y: object.y
+        }
+        if(layers[i].properties.hasOwnProperty('bottom')){
+          object.y = this.heightInPixels-image.data.height+parseInt(layers[i].properties.bottom);
+
         }
 
         if (layers[i].properties.hasOwnProperty('imageRepeat')) {
@@ -103,10 +110,27 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, imageKey) {
           }
         }
 
-        if (layers[i].hasOwnProperty('tint')) {
-          object.tint = "900";
+        if (layers[i].properties.hasOwnProperty('tint')) {
+          object.tint = layers[i].properties.tint;
         }
-        // Scale?
+
+        // Flip with Scale not working
+
+        if (layers[i].properties.hasOwnProperty('scale')) {
+          object.scale.x = parseFloat(layers[i].properties.scale);
+          object.scale.y = parseFloat(layers[i].properties.scale);
+          object.width/=object.scale.x;
+          object.height/=object.scale.y;
+        }
+        if (layers[i].properties.hasOwnProperty('scale.x')) {
+          object.scale.x = parseFloat(layers[i].properties["scale.x"]);
+        }
+        if (layers[i].properties.hasOwnProperty('scale.y')) {
+          object.scale.y = parseFloat(layers[i].properties["scale.y"]);
+        }
+
+        //object.angle = 5;
+
         object.alpha = layers[i].opacity;
         object.parallax = {
           x: 1,
