@@ -2,8 +2,10 @@
 
 #Warning: The plugin is in very early alpha. Not for production use, probably not even any idea for anyone else than me to test yet.
 
-This plugin adds additional features from Tiled mapeditor to Phaser 2. It aims to integrate as seemless as possible with unmodified code. 
+This plugin adds additional features from Tiled mapeditor to Phaser 2. It aims to integrate as seemless as possible with unmodified code.
 The plugin will not improve performance. For incresed performance I recommend the far more advanced plugin Phaser-Tiled https://github.com/englercj/phaser-tiled.
+
+This is highly experimental at the moment, and ideas are added and removed as I go, so does the solutions. My aim is to add stuff I use in my game to a separate plugin and when the features feels kind of stable I will start to figure out how to clean it up and present it.
 
 Planned features:
 * Animated tiles
@@ -38,5 +40,5 @@ layer.updateCollision(new Phaser.Rectangle(0,0,layer.width/2,layer.height/2), tr
 // map = Phaser.Tilemap
 map.defineTriggers(); // Load triggers into map.triggers
 
-map.checkTriggers(group); //checking triggers and activating events for all within group (group = Phaser.Group) 
+map.checkTriggers(group); //checking triggers and activating events for all within group (group = Phaser.Group)
 map.checkTriggers(sprite); //checking triggers and activating events for all within sprite (sprite = Phaser.Sprite)
