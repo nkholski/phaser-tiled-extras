@@ -27,6 +27,31 @@ Callback för tiles
 }*/
 
 
+Phaser.Tilemap.prototype.getTriggerByName = function(name) {
+  return (name in this.triggerNames) ? this.triggerNames[name] : false;
+}
+
+
+Phaser.Tilemap.prototype.tilePropertyToGid = function(value, property) {
+  var keys, i, i2;
+  if (typeof(property) === "undefined" || property === null) {
+    property = "type";
+  }
+  for (i = 0; i < this.tilesets.length; i++) {
+    if (!(this.tilesets[i].hasOwnProperty("tileProperties"))) {
+      continue;
+    }
+    keys = Object.keys(this.tilesets[i].tileProperties);
+    for (i2 = 0; i2 < keys.length; i2++) {
+      if ((this.tilesets[i].tileProperties[keys[i2]].hasOwnProperty(property)) && (this.tilesets[i].tileProperties[keys[i2]][property] === value)) {
+        return (parseInt(keys[i2], 10) + parseInt(this.tilesets[i].firstgid, 10));
+      }
+    }
+  }
+  console.log("Error! No GID found:" + value);
+  return false;
+}
+
 
 Phaser.Tilemap.prototype.addSpriteFunction = function() {
   map = this;
@@ -56,8 +81,8 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
   var game = this.game;
   var responseObjects = [];
 
-  if(!this.hasOwnProperty("imageLayers")){
-    this.imageLayers=[];
+  if (!this.hasOwnProperty("imageLayers")) {
+    this.imageLayers = [];
   }
 
   for (var i in layers) {
@@ -67,7 +92,7 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
           imageKey = definedImageKey;
         } else {
           // 1. Check if properties.key
-          if(layers[i].properties.hasOwnProperty("key")){
+          if (layers[i].properties.hasOwnProperty("key")) {
             imageKey = layers[i].properties.key;
             console.log(imageKey);
           }
@@ -87,8 +112,8 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
           x: object.x,
           y: object.y
         }
-        if(layers[i].properties.hasOwnProperty('bottom')){
-          object.y = this.heightInPixels-image.data.height+parseInt(layers[i].properties.bottom);
+        if (layers[i].properties.hasOwnProperty('bottom')) {
+          object.y = this.heightInPixels - image.data.height + parseInt(layers[i].properties.bottom);
 
         }
 
@@ -119,8 +144,8 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
         if (layers[i].properties.hasOwnProperty('scale')) {
           object.scale.x = parseFloat(layers[i].properties.scale);
           object.scale.y = parseFloat(layers[i].properties.scale);
-          object.width/=object.scale.x;
-          object.height/=object.scale.y;
+          object.width /= object.scale.x;
+          object.height /= object.scale.y;
         }
         if (layers[i].properties.hasOwnProperty('scale.x')) {
           object.scale.x = parseFloat(layers[i].properties["scale.x"]);
@@ -137,7 +162,7 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
           y: 1
         }
         console.log(layers[i].properties.parallax);
-        if(layers[i].properties.hasOwnProperty('parallax') && parseFloat(layers[i].properties.parallax)>0){
+        if (layers[i].properties.hasOwnProperty('parallax') && parseFloat(layers[i].properties.parallax) > 0) {
           console.log("parallax");
           object.parallax = {
             x: parseFloat(layers[i].properties.parallax),
@@ -248,9 +273,12 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
 Phaser.Tilemap.prototype.defineTriggers = function() {
   if (!this.objects.hasOwnProperty("triggers")) {
     this.triggers = null;
+    this.triggerNames = null;
     return;
   }
   this.triggers = [];
+  this.triggerNames = [];
+
   var triggers = this.objects.triggers,
     args, argNames, forbidden = null,
     required = null;
@@ -286,7 +314,7 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
     } else {
       triggers[i].properties.detectAnchorOnly = false;
     }
-
+console.log(triggers[i].name)
     this.triggers.push({
       function: triggers[i].properties.function,
       arguments: args,
@@ -302,11 +330,20 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
       detectAnchorOnly: triggers[i].properties.detectAnchorOnly,
       forbidden: forbidden,
       required: required,
-      newLoop: true
+      newLoop: true,
+      name: (triggers[i].hasOwnProperty("name")) ? triggers[i].name : null
     });
+    if (triggers[i].hasOwnProperty("name") && triggers[i].name) {
+      if (this.triggerNames.hasOwnProperty(triggers[i].name)) {
+        console.log("Error! Duplicate trigger name: " + triggers[i].name+"\ngetTriggerByName will fail!");
+      } else {
+        this.triggerNames[triggers[i].name] = this.triggers.length-1;
+      }
+    }
   }
   if (this.triggers.length === 0) {
     this.triggers = null;
+    this.triggerNames = null;
   }
 }
 
@@ -404,7 +441,10 @@ Phaser.TilemapLayer.prototype.updateCollision = function(area, clear) {
 
 
 
-Phaser.Plugin.TiledExtras = function(game, parent) {};
+Phaser.Plugin.TiledExtras = function(game, parent) {
+  this.game = game;
+  //this.parent = parent;
+};
 Phaser.Plugin.TiledExtras.prototype = Object.create(Phaser.Plugin.prototype);
 Phaser.Plugin.TiledExtras.prototype.constructor = Phaser.Plugin.TiledExtras;
 Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
@@ -414,16 +454,16 @@ Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
       map.triggers[i].newLoop = true;
     }
   }
-  if(map.hasOwnProperty("imageLayers")){
+  if (map.hasOwnProperty("imageLayers")) {
     for (var i in map.imageLayers) {
-        if(map.imageLayers[i].posFixedToCamera.x){
-          map.imageLayers[i].tilePosition.x += (map.imageLayers[i].x - map.game.camera.x)*map.imageLayers[i].parallax.x;
-          map.imageLayers[i].x = map.game.camera.x;
-        }
-        if(map.imageLayers[i].posFixedToCamera.y){
-          map.imageLayers[i].tilePosition.y += (map.imageLayers[i].y - map.game.camera.y)*map.imageLayers[i].parallax.y;
-          map.imageLayers[i].y = map.game.camera.y;
-        }
+      if (map.imageLayers[i].posFixedToCamera.x) {
+        map.imageLayers[i].tilePosition.x += (map.imageLayers[i].x - map.game.camera.x) * map.imageLayers[i].parallax.x;
+        map.imageLayers[i].x = map.game.camera.x;
+      }
+      if (map.imageLayers[i].posFixedToCamera.y) {
+        map.imageLayers[i].tilePosition.y += (map.imageLayers[i].y - map.game.camera.y) * map.imageLayers[i].parallax.y;
+        map.imageLayers[i].y = map.game.camera.y;
+      }
     }
 
   }

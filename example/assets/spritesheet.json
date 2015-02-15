@@ -1,15 +1,15 @@
 {"frames": [
 
 {
-	"filename": "marioBow",
-	"frame": {"x":2,"y":103,"w":16,"h":22},
+	"filename": "blockStatic",
+	"frame": {"x":2,"y":104,"w":16,"h":16},
 	"rotated": false,
-	"trimmed": true,
-	"spriteSourceSize": {"x":0,"y":10,"w":16,"h":22},
-	"sourceSize": {"w":16,"h":32}
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
+	"sourceSize": {"w":16,"h":16}
 },
 {
-	"filename": "marioJump",
+	"filename": "marioBow",
 	"frame": {"x":2,"y":2,"w":16,"h":32},
 	"rotated": false,
 	"trimmed": false,
@@ -17,7 +17,7 @@
 	"sourceSize": {"w":16,"h":32}
 },
 {
-	"filename": "marioStand",
+	"filename": "marioJump",
 	"frame": {"x":20,"y":2,"w":16,"h":32},
 	"rotated": false,
 	"trimmed": false,
@@ -25,7 +25,7 @@
 	"sourceSize": {"w":16,"h":32}
 },
 {
-	"filename": "marioTurn",
+	"filename": "marioStand",
 	"frame": {"x":38,"y":2,"w":16,"h":32},
 	"rotated": false,
 	"trimmed": false,
@@ -33,7 +33,7 @@
 	"sourceSize": {"w":16,"h":32}
 },
 {
-	"filename": "marioWalk0",
+	"filename": "marioTurn",
 	"frame": {"x":2,"y":36,"w":16,"h":32},
 	"rotated": false,
 	"trimmed": false,
@@ -41,19 +41,27 @@
 	"sourceSize": {"w":16,"h":32}
 },
 {
-	"filename": "marioWalk1",
-	"frame": {"x":2,"y":70,"w":14,"h":31},
+	"filename": "marioWalk0",
+	"frame": {"x":2,"y":70,"w":16,"h":32},
 	"rotated": false,
-	"trimmed": true,
-	"spriteSourceSize": {"x":1,"y":0,"w":14,"h":31},
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":32},
+	"sourceSize": {"w":16,"h":32}
+},
+{
+	"filename": "marioWalk1",
+	"frame": {"x":20,"y":36,"w":16,"h":32},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":32},
 	"sourceSize": {"w":16,"h":32}
 },
 {
 	"filename": "marioWalk2",
-	"frame": {"x":18,"y":70,"w":16,"h":30},
+	"frame": {"x":38,"y":36,"w":16,"h":32},
 	"rotated": false,
-	"trimmed": true,
-	"spriteSourceSize": {"x":0,"y":2,"w":16,"h":30},
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":32},
 	"sourceSize": {"w":16,"h":32}
 }],
 "meta": {
@@ -63,6 +71,6 @@
 	"format": "RGBA8888",
 	"size": {"w":64,"h":128},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:8d3c20aa87ac1647a2accd39ea8046d9:6c242b63e3de26dc9f65342ba460934a:729adc6043343cfda41c447ce8f464d6$"
+	"smartupdate": "$TexturePacker:SmartUpdate:ee17f546877c5546f4b782d7cc32b8bf:b21a266815443d74e110963051e58ce8:729adc6043343cfda41c447ce8f464d6$"
 }
 }
