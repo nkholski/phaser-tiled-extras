@@ -1,0 +1,39 @@
+Gulp gör Tiled extras plus valfritt Triggers, Collisions, InageLayer
+
+
+Phaser.Plugin.TiledExtras
+
+Phaser.Plugin.TiledExtras.Triggers
+
+Phaser.Plugin.TiledExtras.Collisions
+
+Phaser.Plugin.TiledExtras.ImageLayer
+
+=== Tiled Tilemap features/properties
+
+
+
+=== Methods
+
+= ImageLayer
+map.addImageLayer();
+
+= Collisions
+map.updateTiledCollisions();
+
+= Triggers
+map.triggers.getTriggerByName(name);
+map.triggers.checkTriggers(object);
+map.triggers.defineTriggers();
+
+=Other
+map.tilePropertyToGid();
+
+=== Variables
+
+= ImageLayer
+map.imageLayer
+
+= Triggers
+map.triggers
+map.triggerNames

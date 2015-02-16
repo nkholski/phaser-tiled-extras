@@ -94,7 +94,6 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
           // 1. Check if properties.key
           if (layers[i].properties.hasOwnProperty("key")) {
             imageKey = layers[i].properties.key;
-            console.log(imageKey);
           }
           // 2. Check if image key === layer name
 
@@ -153,6 +152,16 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
         if (layers[i].properties.hasOwnProperty('scale.y')) {
           object.scale.y = parseFloat(layers[i].properties["scale.y"]);
         }
+        object.displace = {x: 0, y:0};
+        object.velocity = {x: 0, y: 0};
+        object.offset = {x: 0, y: 0};
+        if (layers[i].properties.hasOwnProperty('velocity')) {
+          object.velocity.x = parseFloat(layers[i].properties.velocity);
+          object.velocity.y = parseFloat(layers[i].properties.velocity);
+        }
+        object.velocity.x = layers[i].properties.hasOwnProperty('velocity.x')? parseFloat(layers[i].properties["velocity.x"]): object.velocity.x;
+        object.velocity.y = layers[i].properties.hasOwnProperty('velocity.y')? parseFloat(layers[i].properties["velocity.y"]): object.velocity.y;
+
 
         //object.angle = 5;
 
@@ -448,6 +457,7 @@ Phaser.Plugin.TiledExtras = function(game, parent) {
 Phaser.Plugin.TiledExtras.prototype = Object.create(Phaser.Plugin.prototype);
 Phaser.Plugin.TiledExtras.prototype.constructor = Phaser.Plugin.TiledExtras;
 Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
+  var parallax = {x: 0, y:0};
   if (map.hasOwnProperty("triggers")) {
     for (var i in map.triggers) {
       triggers[map.triggers[i].function](map.triggers[i], null, true);
@@ -456,14 +466,21 @@ Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
   }
   if (map.hasOwnProperty("imageLayers")) {
     for (var i in map.imageLayers) {
+      map.imageLayers[i].offset.x += map.imageLayers[i].velocity.x; // Tar inte hänsyn till TIME
+      map.imageLayers[i].offset.x += map.imageLayers[i].velocity.y;
+
       if (map.imageLayers[i].posFixedToCamera.x) {
-        map.imageLayers[i].tilePosition.x += (map.imageLayers[i].x - map.game.camera.x) * map.imageLayers[i].parallax.x;
+        map.imageLayers[i].offset.x += (map.imageLayers[i].x - map.game.camera.x) * map.imageLayers[i].parallax.x
         map.imageLayers[i].x = map.game.camera.x;
+
       }
       if (map.imageLayers[i].posFixedToCamera.y) {
-        map.imageLayers[i].tilePosition.y += (map.imageLayers[i].y - map.game.camera.y) * map.imageLayers[i].parallax.y;
+        map.imageLayers[i].offset.y += (map.imageLayers[i].y - map.game.camera.y) * map.imageLayers[i].parallax.y;
         map.imageLayers[i].y = map.game.camera.y;
       }
+      map.imageLayers[i].tilePosition.x = map.imageLayers[i].offset.x+map.imageLayers[i].displace.x;
+      map.imageLayers[i].tilePosition.y = map.imageLayers[i].offset.y+map.imageLayers[i].displace.y;
+
     }
 
   }

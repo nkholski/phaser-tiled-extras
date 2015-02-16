@@ -1,7 +1,8 @@
 var game = new Phaser.Game(320, 192, Phaser.AUTO, 'phaser-example', {
   preload: preload,
   create: create,
-  update: update
+  update: update,
+  render: render
 });
 var writeTile = true;
 
@@ -62,6 +63,7 @@ function create() {
   ship.anchor.setTo(0.5, 0.5);
   ship.body.maxVelocity.x = 150;
   ship.body.maxVelocity.y = 300;
+  ship.body.setSize(12,28,2,3)
   //globals.balloon.animations.add("default", ["ugh0", "ugh1", "ugh2", "ugh3", "ugh4"], 20, true);
   ship.play('walk');
 
@@ -92,21 +94,24 @@ function create() {
   cursors = game.input.keyboard.createCursorKeys();
   loadSprites();
 
+  game.add.tween(map.imageLayers[0].displace).to( { y: 10 }, 2000, Phaser.Easing.Sinusoidal.InOut, true, 0, 1000, true);
+  game.add.tween(map.imageLayers[1].displace).to( { y: 15 }, 2000, Phaser.Easing.Sinusoidal.InOut, true, 0, 1000, true);
+
 }
 
 function update() {
 
-  this.physics.arcade.collide(spriteGroup, layers[0]);
   this.physics.arcade.collide(spriteGroup, spriteGroup);
 
+  this.physics.arcade.collide(spriteGroup, layers[0]);
 
 //  this.physics.arcade.collide(ship, layers[0]);
   if (cursors.left.isDown) {
-    ship.body.acceleration.x = -1000;
+    ship.body.acceleration.x = -800;
     ship.scale.x = -1;
 
   } else if (cursors.right.isDown) {
-    ship.body.acceleration.x = 1000;
+    ship.body.acceleration.x = 800;
     ship.scale.x = 1;
 
   } else {
@@ -125,7 +130,7 @@ function update() {
   }
 
 
-  if (ship.body.velocity.y != 0) {
+  if (ship.body.velocity.y != 0 && (!ship.body.blocked.down && !ship.body.touching.down)) {
     animation = "jump";
   } else if (Math.abs(ship.body.velocity.x) > 1) {
     if (((ship.body.acceleration.x < 0 && ship.body.velocity.x > 0) || (ship.body.acceleration.x > 0 && ship.body.velocity.x < 0))) {
@@ -157,6 +162,16 @@ function update() {
   //map.checkTriggers(ship);
 
   map.checkTriggers(spriteGroup);
+
+}
+
+
+function render(){
+  //debug.body(ship);
+  return;
+
+  game.debug.spriteInfo(ship, 32, 32);
+  game.debug.body(ship);
 
 }
 
