@@ -4,7 +4,7 @@ Tilemap.js 417-420: Properties till sprites, gör samma med t.ex. ImageLayer
 
 
 
-
+Om ImageLayer görs för alla lager, men ett redan finns ska det hoppas över.
 
 
 Planerade funktioner:

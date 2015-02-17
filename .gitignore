@@ -1,2 +1,4 @@
 example/rawImages/
 backups/
+npm-debug.log
+node_modules

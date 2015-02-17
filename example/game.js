@@ -14,6 +14,8 @@ function preload() {
   game.load.image('tileset', 'assets/tileset.png');
   game.load.image('ship', 'assets/ship.png');
   game.load.image('marioClouds', 'assets/Mario_Clouds_small.png');
+  game.load.image('motherBrain', 'assets/motherBrain.png');
+
   game.load.image('background', 'assets/background.png');
 
 
@@ -122,7 +124,6 @@ function update() {
   }
 
   if (cursors.up.isDown && (ship.body.blocked.down || ship.body.touching.down)) {
-    console.log("Jump");
     ship.body.velocity.y = -200;
   } else if (cursors.down.isDown) {
     //ship.body.velocity.y = 300;
@@ -150,11 +151,8 @@ function update() {
 
   if ((Math.abs(ship.body.velocity.x) > 1) && ((ship.body.acceleration.x < 0 && ship.body.velocity.x > 0) || (ship.body.acceleration.x > 0 && ship.body.velocity.x < 0))) {
     ship.play("turn");
-    console.log("TURNING")
   }
-  if ((ship.body.acceleration < 0 && ship.body.velocity.x > 0)) {
-    console.log("turn")
-  }
+
 
 
 //  this.physics.arcade.collide(ship, layers[1]);

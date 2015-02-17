@@ -5,7 +5,6 @@ EN enda init som fixar updateCollision utifrån map och Triggers
 
 
 Funition
-CollisionReinit(x0,x1,y0,y1) = Gör kontroll av tile och skapar collision. Tex när nya har klistrats in.
 Callback för tiles
 
  */
@@ -26,6 +25,64 @@ Callback för tiles
 
 }*/
 
+
+// FUNKAR INTE HELT. GRAVITATION...
+Phaser.Tilemap.prototype.loadSprites = function(layerName, defaultImageKey, group) {
+  if (!layerName) {
+    layerName = "sprites";
+  }
+  var objectLayer = false;
+  keys = Object.keys(this.objects);
+
+  for (var i in keys) {
+    if (keys[i] != layerName) {
+      continue;
+    }
+    objectLayer = this.objects[keys[i]];
+    break;
+  }
+
+  if (!objectLayer) {
+    console.warn("loadSprites failed to identify layer!");
+    return;
+  }
+
+  // Loop all objects in layer:
+  for (var i in objectLayer) {
+    var spriteObject = false;
+    var imageKey = defaultImageKey;
+    if(!objectLayer[i].gid){
+      continue;
+    }
+    // Check if object has imagekey-property
+    if (objectLayer[i].type !== "") {
+      spriteObject = objectLayer[i].type;
+    } else {
+      var tileProperties = this.gidToTileProperties(objectLayer[i].gid);
+      if (tileProperties.hasOwnProperty("type")) {
+        spriteObject = tileProperties.type;
+      }
+    }
+    if(spriteObject && spriteObject!==""){
+      console.log("Load"+spriteObject);
+      themap.createFromObjects(layerName, objectLayer[i].gid, imageKey, null, true, null, group, window[spriteObject]);
+    }
+  }
+}
+
+
+Phaser.Tilemap.prototype.gidToTileProperties = function(gid) {
+  console.log(this);
+  for (var i in this.tilesets) {
+    if (this.tilesets[i].containsTileIndex(gid)) {
+      if (this.tilesets[i].tileProperties.hasOwnProperty(gid - this.tilesets[i].firstgid)) {
+        return this.tilesets[i].tileProperties[(gid - this.tilesets[i].firstgid)];
+      }
+      return false;
+    }
+  }
+  console.warn("No tileset contain " + gid);
+}
 
 
 
@@ -146,23 +203,35 @@ Phaser.TilemapLayer.prototype.updateCollision = function(area, clear) {
 
 Phaser.Plugin.TiledExtras = function(game, parent) {
   this.game = game;
-  this.Triggers = new Phaser.Plugin.TiledExtras.Triggers(game);
+  this.name = "tiledExtras";
+  this.map = null;
+  //this.Triggers = new Phaser.Plugin.TiledExtras.Triggers(game);
   //this.parent = parent;
 };
 Phaser.Plugin.TiledExtras.prototype = Object.create(Phaser.Plugin.prototype);
 Phaser.Plugin.TiledExtras.prototype.constructor = Phaser.Plugin.TiledExtras;
 Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
-  var parallax = {x: 0, y:0};
+  var parallax = {
+    x: 0,
+    y: 0
+  };
+  map = this.map;
+
   if (map.hasOwnProperty("triggers")) {
     for (var i in map.triggers) {
-      triggers[map.triggers[i].function](map.triggers[i], null, true);
+      if (map.triggers[i].enabled && map.triggers[i].callback) {
+        triggers[map.triggers[i].callback](map.triggers[i], null, true);
+      }
       map.triggers[i].newLoop = true;
     }
   }
   if (map.hasOwnProperty("imageLayers")) {
+
+
     for (var i in map.imageLayers) {
-      map.imageLayers[i].offset.x += map.imageLayers[i].velocity.x; // Tar inte hänsyn till TIME
-      map.imageLayers[i].offset.x += map.imageLayers[i].velocity.y;
+
+      map.imageLayers[i].offset.x += map.imageLayers[i].velocity.x * this.game.time.physicsElapsed;
+      map.imageLayers[i].offset.y += map.imageLayers[i].velocity.y * this.game.time.physicsElapsed;
 
       if (map.imageLayers[i].posFixedToCamera.x) {
         map.imageLayers[i].offset.x += (map.imageLayers[i].x - map.game.camera.x) * map.imageLayers[i].parallax.x
@@ -173,10 +242,20 @@ Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
         map.imageLayers[i].offset.y += (map.imageLayers[i].y - map.game.camera.y) * map.imageLayers[i].parallax.y;
         map.imageLayers[i].y = map.game.camera.y;
       }
-      map.imageLayers[i].tilePosition.x = map.imageLayers[i].offset.x+map.imageLayers[i].displace.x;
-      map.imageLayers[i].tilePosition.y = map.imageLayers[i].offset.y+map.imageLayers[i].displace.y;
+      map.imageLayers[i].tilePosition.x = map.imageLayers[i].offset.x + map.imageLayers[i].displace.x;
+      map.imageLayers[i].tilePosition.y = map.imageLayers[i].offset.y + map.imageLayers[i].displace.y;
 
     }
 
+  }
+}
+
+Phaser.Tilemap.prototype.setDefault = function() {
+  game = this.game;
+  for (var i in game.plugins.plugins) {
+    if (game.plugins.plugins[i].hasOwnProperty("name") && game.plugins.plugins[i].name === "tiledExtras") {
+      game.plugins.plugins[i].map = this;
+      return;
+    }
   }
 }

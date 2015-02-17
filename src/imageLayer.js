@@ -1,5 +1,7 @@
 Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
-  var layers = this.game.cache._tilemaps[map.key].data.layers;
+  this.setDefault();
+
+  var layers = this.game.cache._tilemaps[this.key].data.layers;
   var game = this.game;
   var responseObjects = [];
 
@@ -13,16 +15,38 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
         if (definedImageKey) {
           imageKey = definedImageKey;
         } else {
-          // 1. Check if properties.key
+          // 1. Check if properties.key exists
           if (layers[i].properties.hasOwnProperty("key")) {
             imageKey = layers[i].properties.key;
           }
           // 2. Check if image key === layer name
+          else if(game.cache._images.hasOwnProperty(layers[i].name))
+          {
+          imageKey = layers[i].name;
+          }
+          else{
+          // 3. Check if image filename === layer image filename (UNTESTED)
+          var keys = Object.keys(game.cache._images);
+          for(var i2 in keys){
+            if(keys[i2]==="__default" || keys[i2]==="__missing"){continue;}
+            if(game.cache._images[keys[i2]].url.indexOf("/"+layers[i].image)>0){
+              imageKey = keys[i2];
+            }
+          }
+          }
 
-          // 3. Check if image filename === layer image filename
         }
-
-        image = game.cache._images[imageKey];
+        if(!imageKey){
+          console.warn("Couldn't decide imageKey!");
+          continue;
+        }
+        if(game.cache._images.hasOwnProperty(imageKey)){
+          image = game.cache._images[imageKey];
+        }
+        else{
+          console.warn("No image with key:"+imageKey);
+          continue;
+        }
 
         object = game.add.tileSprite(layers[i].x, layers[i].y, image.data.width, image.data.height, imageKey);
 
@@ -92,9 +116,7 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
           x: 1,
           y: 1
         }
-        console.log(layers[i].properties.parallax);
         if (layers[i].properties.hasOwnProperty('parallax') && parseFloat(layers[i].properties.parallax) > 0) {
-          console.log("parallax");
           object.parallax = {
             x: parseFloat(layers[i].properties.parallax),
             y: parseFloat(layers[i].properties.parallax)

@@ -1,58 +1,56 @@
-Phaser.Plugin.TiledExtras.Triggers = function (game) {
-  /**
-  * @property {Phaser.Game} game - A reference to the currently running Game.
-  */
-  this.game = game;
+Phaser.Plugin.TiledExtras.Triggers = function(game) {
+    /**
+     * @property {Phaser.Game} game - A reference to the currently running Game.
+     */
+    this.game = game;
 
-  /**
-  * @property {Phaser.Tilemap} map - A reference to the current map.
-  */
-  this.map = map;
+    /**
+     * @property {Phaser.Tilemap} map - A reference to the current map.
+     */
+    this.map = map;
 
-  this.triggers = [];
-  this.triggerNames = [];
-
-
-  /**
-  * @property {boolean} _cleared - Internal var.
-  * @private
-  */
-  this._resetTests = false;
+    this.triggers = [];
+    this.triggerNames = [];
 
 
-}
-/*
-Phaser.Plugin.TiledExtras.prototype = Object.create(Phaser.Plugin.prototype);
-Phaser.Plugin.TiledExtras.prototype.constructor = Phaser.Plugin.TiledExtras;
-Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
-  if (map.hasOwnProperty("triggers")) {
-    for (var i in map.triggers) {
-      triggers[map.triggers[i].function](map.triggers[i], null, true);
-      map.triggers[i].newLoop = true;
-    }
-  }
-  if (map.hasOwnProperty("imageLayers")) {
-    for (var i in map.imageLayers) {
-      if (map.imageLayers[i].posFixedToCamera.x) {
-        map.imageLayers[i].tilePosition.x += (map.imageLayers[i].x - map.game.camera.x) * map.imageLayers[i].parallax.x;
-        map.imageLayers[i].x = map.game.camera.x;
-      }
-      if (map.imageLayers[i].posFixedToCamera.y) {
-        map.imageLayers[i].tilePosition.y += (map.imageLayers[i].y - map.game.camera.y) * map.imageLayers[i].parallax.y;
-        map.imageLayers[i].y = map.game.camera.y;
-      }
-    }
+    /**
+     * @property {boolean} _cleared - Internal var.
+     * @private
+     */
+    this._resetTests = false;
+
 
   }
-}*/
+  /*
+  Phaser.Plugin.TiledExtras.prototype = Object.create(Phaser.Plugin.prototype);
+  Phaser.Plugin.TiledExtras.prototype.constructor = Phaser.Plugin.TiledExtras;
+  Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
+    if (map.hasOwnProperty("triggers")) {
+      for (var i in map.triggers) {
+        triggers[map.triggers[i].function](map.triggers[i], null, true);
+        map.triggers[i].newLoop = true;
+      }
+    }
+    if (map.hasOwnProperty("imageLayers")) {
+      for (var i in map.imageLayers) {
+        if (map.imageLayers[i].posFixedToCamera.x) {
+          map.imageLayers[i].tilePosition.x += (map.imageLayers[i].x - map.game.camera.x) * map.imageLayers[i].parallax.x;
+          map.imageLayers[i].x = map.game.camera.x;
+        }
+        if (map.imageLayers[i].posFixedToCamera.y) {
+          map.imageLayers[i].tilePosition.y += (map.imageLayers[i].y - map.game.camera.y) * map.imageLayers[i].parallax.y;
+          map.imageLayers[i].y = map.game.camera.y;
+        }
+      }
+
+    }
+  }*/
 
 
 
 Phaser.Tilemap.prototype.getTriggerByName = function(name) {
   return (name in this.triggerNames) ? this.triggerNames[name] : false;
 }
-
-
 
 
 Phaser.Tilemap.prototype.checkTriggers = function(object) {
@@ -64,7 +62,7 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
   var offset, objectArray, objectBounds;
 
   if (!this.hasOwnProperty("triggers")) {
-    console.log("checkTriggers called before defineTriggers!");
+    console.warn("checkTriggers called before defineTriggers!");
     return;
   }
   if (!this.triggers) {
@@ -74,18 +72,18 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
 
   switch (object.type) {
     case 0: // Sprite
-    offset = {
-      x: 0,
-      y: 0
-    }; // Men om den är i en group??!
-    objectArray = [object];
+      offset = {
+        x: 0,
+        y: 0
+      }; // Men om den är i en group??!
+      objectArray = [object];
     case 7: // Group
-    offset = {
-      x: object.x,
-      y: object.y
-    };
-    objectArray = object.children;
-    break;
+      offset = {
+        x: object.x,
+        y: object.y
+      };
+      objectArray = object.children;
+      break;
   }
 
   for (var o in objectArray) {
@@ -102,10 +100,13 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
 
 
     for (var i in this.triggers) {
-      if (map.triggers[i].newLoop) {
-        map.triggers[i].wasTrigged = map.triggers[i].trigged;
-        map.triggers[i].endorsers = [];
-        map.triggers[i].newLoop = false;
+      if (!this.triggers[i].enabled) {
+        continue;
+      }
+      if (this.triggers[i].newLoop) {
+        this.triggers[i].wasTrigged = this.triggers[i].trigged;
+        this.triggers[i].endorsers = [];
+        this.triggers[i].newLoop = false;
       }
       // Skip if object is unable to trigger this trigger
       if (this.triggers[i].required) {
@@ -128,10 +129,14 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
       if (objectBounds.anchorX < this.triggers[i].x1 && objectBounds.anchorX > this.triggers[i].x0 && objectBounds.anchorY < this.triggers[i].y1 && objectBounds.anchorY > this.triggers[i].y0) {
         this.triggers[i].trigged = true;
         this.triggers[i].endorsers.push(object);
-        triggers[this.triggers[i].function](this.triggers[i], object);
+        if (this.triggers[i].callback) {
+          triggers[this.triggers[i].callback](this.triggers[i], object);
+        }
       } else if (this.triggers[i].wasTrigged && this.triggers[i].endorsers.length === 0) {
         this.triggers[i].trigged = false;
-        triggers[this.triggers[i].function](this.triggers[i], object);
+        if (this.triggers[i].callback) {
+          triggers[this.triggers[i].callback](this.triggers[i], object);
+        }
       }
 
     }
@@ -141,6 +146,7 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
 
 
 Phaser.Tilemap.prototype.defineTriggers = function() {
+  this.setDefault();
   if (!this.objects.hasOwnProperty("triggers")) {
     this.triggers = null;
     this.triggerNames = null;
@@ -150,20 +156,15 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
   this.triggerNames = [];
 
   var triggers = this.objects.triggers,
-  args, argNames, forbidden = null,
-  required = null;
+    args, argNames, forbidden = null,
+    required = null;
 
   for (var i = 0, len = triggers.length; i < len; i++) {
-    if (!triggers[i].properties.function) {
-      console.log("Error: No function for trigger starting at x=" + triggers[i].x + ", y=" + triggers[i].y);
-      continue;
-    }
-
     args = {};
     argNames = Object.keys(triggers[i].properties);
 
     for (var i2 in argNames) {
-      if (argNames[i2] !== "function" && argNames[i2] !== "required" && argNames[i2] !== "forbidden") {
+      if (argNames[i2] !== "callback" && argNames[i2] !== "required" && argNames[i2] !== "forbidden") {
         args[argNames[i2]] = triggers[i].properties[argNames[i2]];
       }
     }
@@ -184,9 +185,9 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
     } else {
       triggers[i].properties.detectAnchorOnly = false;
     }
-    console.log(triggers[i].name)
     this.triggers.push({
-      function: triggers[i].properties.function,
+      enabled: (!triggers[i].properties.hasOwnProperty("enabled") || (!triggers[i].properties.enabled === "true")),
+      callback: (triggers[i].properties.hasOwnProperty("callback")) ? triggers[i].properties.callback : null,
       arguments: args,
       x0: triggers[i].x,
       y0: triggers[i].y,
@@ -205,9 +206,9 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
     });
     if (triggers[i].hasOwnProperty("name") && triggers[i].name) {
       if (this.triggerNames.hasOwnProperty(triggers[i].name)) {
-        console.log("Error! Duplicate trigger name: " + triggers[i].name+"\ngetTriggerByName will fail!");
+        console.warn("Duplicate trigger name: " + triggers[i].name + "\ngetTriggerByName will fail!");
       } else {
-        this.triggerNames[triggers[i].name] = this.triggers.length-1;
+        this.triggerNames[triggers[i].name] = this.triggers.length - 1;
       }
     }
   }
