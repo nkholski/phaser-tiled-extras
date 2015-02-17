@@ -14,7 +14,7 @@ var triggers = {
     }
 
     // Demand at least two separate objects triggering the trigger, or set it to false.
-    if (trigger.endorsers.length < 2) {
+    if (trigger.endorsers.length !== 2) {
       trigger.trigged = false;
     }
 

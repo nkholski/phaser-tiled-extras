@@ -1,0 +1,10 @@
+{
+  "name": "phaser-tiled-extras",
+  "version": "0",
+  "release": "pre-alpha",
+  "description": "Plugin for Phaser.",
+  "author": "Niklas Berg <mailto@niklasberg.se>",
+  "license": "MIT",
+  "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
+  "main": "./build/phaser-tiled-extras.min.js"
+}
