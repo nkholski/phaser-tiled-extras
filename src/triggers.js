@@ -130,12 +130,12 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
         this.triggers[i].trigged = true;
         this.triggers[i].endorsers.push(object);
         if (this.triggers[i].callback) {
-          triggers[this.triggers[i].callback](this.triggers[i], object);
+          this.triggers[i].callback(this.triggers[i], object);
         }
       } else if (this.triggers[i].wasTrigged && this.triggers[i].endorsers.length === 0) {
         this.triggers[i].trigged = false;
         if (this.triggers[i].callback) {
-          triggers[this.triggers[i].callback](this.triggers[i], object);
+          this.triggers[i].callback(this.triggers[i], object);
         }
       }
 
@@ -185,10 +185,34 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
     } else {
       triggers[i].properties.detectAnchorOnly = false;
     }
+
+    // fix callback
+    var callback = null;
+    if (triggers[i].properties.hasOwnProperty("callback")) {
+      callback = window;
+      var parts = triggers[i].properties.callback.split(".");
+      for (var i2 in parts) {
+        if (callback.hasOwnProperty(parts[i2])) {
+          callback = callback[parts[i2]];
+        } else {
+          console.warn("Trigger callback not found: " + parts[i2]);
+          break;
+        }
+      }
+    }
+
     this.triggers.push({
       enabled: (!triggers[i].properties.hasOwnProperty("enabled") || (!triggers[i].properties.enabled === "true")),
-      callback: (triggers[i].properties.hasOwnProperty("callback")) ? triggers[i].properties.callback : null,
+      callback: callback,
       arguments: args,
+      area: {
+        x: triggers[i].x,
+        y: triggers[i].y,
+        width: triggers[i].width,
+        height: triggers[i].height,
+        x2: triggers[i].x + triggers[i].width,
+        y2: triggers[i].y + triggers[i].height
+      },
       x0: triggers[i].x,
       y0: triggers[i].y,
       width: triggers[i].width,

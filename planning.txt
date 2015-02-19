@@ -3,6 +3,12 @@ Gulp gör Tiled extras plus valfritt Triggers, Collisions, InageLayer
 Tilemap.js 417-420: Properties till sprites, gör samma med t.ex. ImageLayer
 
 
+Trigger: window["game"]["width"]
+spit /./
+callback = window[part[0]]
+while(i)
+callback = callback[part[i]]
+
 
 Om ImageLayer görs för alla lager, men ett redan finns ska det hoppas över.
 

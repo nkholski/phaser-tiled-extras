@@ -3,14 +3,14 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
 
   var layers = this.game.cache._tilemaps[this.key].data.layers;
   var game = this.game;
-  var responseObjects = [];
+  var tileSpriteArray = []; // Return value
 
   if (!this.hasOwnProperty("imageLayers")) {
     this.imageLayers = [];
   }
 
   for (var i in layers) {
-    if (layers[i].type === "imagelayer") {
+    if (layers[i].type === "imagelayer") { // Better to check map.images???
       if (!layerName || layerName === layers[i].name) {
         if (definedImageKey) {
           imageKey = definedImageKey;
@@ -20,31 +20,30 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
             imageKey = layers[i].properties.key;
           }
           // 2. Check if image key === layer name
-          else if(game.cache._images.hasOwnProperty(layers[i].name))
-          {
-          imageKey = layers[i].name;
-          }
-          else{
-          // 3. Check if image filename === layer image filename (UNTESTED)
-          var keys = Object.keys(game.cache._images);
-          for(var i2 in keys){
-            if(keys[i2]==="__default" || keys[i2]==="__missing"){continue;}
-            if(game.cache._images[keys[i2]].url.indexOf("/"+layers[i].image)>0){
-              imageKey = keys[i2];
+          else if (game.cache._images.hasOwnProperty(layers[i].name)) {
+            imageKey = layers[i].name;
+          } else {
+            // 3. Check if image filename === layer image filename (UNTESTED)
+            var keys = Object.keys(game.cache._images);
+            for (var i2 in keys) {
+              if (keys[i2] === "__default" || keys[i2] === "__missing") {
+                continue;
+              }
+              if (game.cache._images[keys[i2]].url.indexOf("/" + layers[i].image) > 0) {
+                imageKey = keys[i2];
+              }
             }
-          }
           }
 
         }
-        if(!imageKey){
+        if (!imageKey) {
           console.warn("Couldn't decide imageKey!");
           continue;
         }
-        if(game.cache._images.hasOwnProperty(imageKey)){
+        if (game.cache._images.hasOwnProperty(imageKey)) {
           image = game.cache._images[imageKey];
-        }
-        else{
-          console.warn("No image with key:"+imageKey);
+        } else {
+          console.warn("No image with key:" + imageKey);
           continue;
         }
 
@@ -65,7 +64,7 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
 
         if (layers[i].properties.hasOwnProperty('imageRepeat')) {
           switch (layers[i].properties.imageRepeat) {
-            case 'repeat':
+            case 'repeat': // TODO: repeated with out filling screen.
               object.x = 0;
               object.y = 0;
               object.width = game.width;
@@ -78,6 +77,11 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
               object.width = game.width;
               object.posFixedToCamera.x = true;
               break;
+            case 'repeat-y':
+              object.y = 0;
+              object.width = game.width;
+              object.posFixedToCamera.y = true;
+              break;
           }
         }
 
@@ -85,7 +89,7 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
           object.tint = layers[i].properties.tint;
         }
 
-        // Flip with Scale not working
+        // Flip with Scale<0 not working!
 
         if (layers[i].properties.hasOwnProperty('scale')) {
           object.scale.x = parseFloat(layers[i].properties.scale);
@@ -99,15 +103,24 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
         if (layers[i].properties.hasOwnProperty('scale.y')) {
           object.scale.y = parseFloat(layers[i].properties["scale.y"]);
         }
-        object.displace = {x: 0, y:0};
-        object.velocity = {x: 0, y: 0};
-        object.offset = {x: 0, y: 0};
+        object.displace = {
+          x: 0,
+          y: 0
+        };
+        object.velocity = {
+          x: 0,
+          y: 0
+        };
+        object.offset = {
+          x: 0,
+          y: 0
+        };
         if (layers[i].properties.hasOwnProperty('velocity')) {
           object.velocity.x = parseFloat(layers[i].properties.velocity);
           object.velocity.y = parseFloat(layers[i].properties.velocity);
         }
-        object.velocity.x = layers[i].properties.hasOwnProperty('velocity.x')? parseFloat(layers[i].properties["velocity.x"]): object.velocity.x;
-        object.velocity.y = layers[i].properties.hasOwnProperty('velocity.y')? parseFloat(layers[i].properties["velocity.y"]): object.velocity.y;
+        object.velocity.x = layers[i].properties.hasOwnProperty('velocity.x') ? parseFloat(layers[i].properties["velocity.x"]) : object.velocity.x;
+        object.velocity.y = layers[i].properties.hasOwnProperty('velocity.y') ? parseFloat(layers[i].properties["velocity.y"]) : object.velocity.y;
 
         //object.angle = 5;
 
@@ -123,16 +136,16 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
           }
 
         }
-        responseObjects.push(object);
+        tileSpriteArray.push(object);
         this.imageLayers.push(object);
       }
     }
   }
-  if (responseObjects.length === 0) {
+  if (tileSpriteArray.length === 0) {
     return false;
-  } else if (responseObjects.length === 1) {
-    return responseObjects[0];
+  } else if (tileSpriteArray.length === 1) {
+    return tileSpriteArray[0];
   } else {
-    return responseObjects;
+    return tileSpriteArray;
   }
 };

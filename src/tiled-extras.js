@@ -220,7 +220,7 @@ Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
   if (map.hasOwnProperty("triggers")) {
     for (var i in map.triggers) {
       if (map.triggers[i].enabled && map.triggers[i].callback) {
-        triggers[map.triggers[i].callback](map.triggers[i], null, true);
+        map.triggers[i].callback(map.triggers[i], null, true);
       }
       map.triggers[i].newLoop = true;
     }

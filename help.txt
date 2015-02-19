@@ -29,12 +29,12 @@ name        string            null          name                 Name of trigger
 enabled     boolean           true          enabled              Turns the trigger check on/off. Can be false while trigged is true.
 callback    string            null          callback             Callback when trigged/untrigged (no callback as default).
 arguments   object            []            -                    Object with all custom Tile properties.
-->area        object            -             -                    Coordinates of object area set in Tiled. (x, y, width, height, x1, y2)
+area        object            -             -                    Coordinates of object area set in Tiled. (x, y, width, height, x2, y2)
 trigged     boolean           false         -                    If the trigger is trigged.
 wasTrigged  boolean           false         -                    If the trigger is trigged in previous update.
 endorsers   array             []            -                    Array of objects that endorse the trigger.
 checkBody     boolean           false       checkBody            Check if body is within trigger area instead of just position point (more expensive).
-_newLoop    boolean           -             -                    Internal variable to reset endorsers in new update.
+->_newLoop    boolean           -             -                    Internal variable to reset endorsers in new update.
 
 
 images - modified (imageLayers ska hit)

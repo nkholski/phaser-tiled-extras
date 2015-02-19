@@ -104,7 +104,7 @@
                  "properties":
                     {
                      "box":"44,6,5,5",
-                     "callback":"replaceTiles",
+                     "callback":"triggers.replaceTiles",
                      "forbidden":"ghost=true",
                      "gid":"21"
                     },
