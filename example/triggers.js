@@ -1,6 +1,57 @@
 // Example triggers
 
 var triggers = {
+  clockWiseRunVars: {
+    lastDirection: null,
+    count: 0
+  },
+  clockWiseRun: function(trigger, object, lastCall) {
+    // We're not interested in the postUpdate-call
+    if (lastCall) {
+      return;
+    }
+    // Only change if it's Mario, else change trigger status to false.
+    if (!object || object.name != "Mario") {
+      // If something else than Mario trigged it, kick it out again!
+      if (trigger.trigged) {
+        trigger.endorsers.pop();
+        if (trigger.endorsers.length == 0) {
+          trigger.trigged = false;
+        }
+      }
+      return;
+    }
+    // OK we're only interested in triggering, not leaving the trigger...
+    if (!trigger.trigged) {
+      return;
+    }
+    switch (trigger.arguments.direction + triggers.clockWiseRunVars.lastDirection) {
+      case "nw":
+      case "en":
+      case "se":
+      case "ws":
+        // moved clockwise!
+        triggers.clockWiseRunVars.count++;
+        break;
+      case "nn":
+      case "ee":
+      case "ss":
+      case "ww":
+        // Ignore it
+        break;
+      default:
+        // moving in the wrong direction
+        triggers.clockWiseRunVars.count = 0;
+    }
+    triggers.clockWiseRunVars.lastDirection = trigger.arguments.direction;
+
+    if(triggers.clockWiseRunVars.count>6){
+      game.add.tween(map.getImageLayerByName("motherBrain")).to( { alpha: 1 }, 2000, Phaser.Easing.Bounce.In, true);
+      trigger.enabled = false;
+    }
+
+
+  },
   replaceTiles: function(trigger, object, lastCall) {
     if (object) {
       // Object is now infected by the trigger and cured if not on trigger

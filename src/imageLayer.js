@@ -1,3 +1,12 @@
+Phaser.Tilemap.prototype.getImageLayerByName = function(layerName){
+  for(var i in map.imageLayers){
+    if(map.imageLayers[i].name === layerName){
+      return map.imageLayers[i];
+    }
+  }
+  return null;
+}
+
 Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
   this.setDefault();
 
@@ -136,6 +145,10 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
           }
 
         }
+
+        object.name = layers[i].name;
+
+
         tileSpriteArray.push(object);
         this.imageLayers.push(object);
       }

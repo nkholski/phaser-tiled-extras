@@ -2,7 +2,8 @@ example/rawImages/
 backups/
 npm-debug.log
 node_modules
-**/*_old.js
-*_old.js
+*_old*
 *_bak*
 *~
+planning.txt
+help.txt

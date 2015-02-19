@@ -65,7 +65,8 @@ function create() {
   ship.anchor.setTo(0.5, 0.5);
   ship.body.maxVelocity.x = 150;
   ship.body.maxVelocity.y = 300;
-  ship.body.setSize(12,28,2,3)
+  ship.body.setSize(12,28,2,3);
+  ship.name = "Mario";
   //globals.balloon.animations.add("default", ["ugh0", "ugh1", "ugh2", "ugh3", "ugh4"], 20, true);
   ship.play('walk');
 
