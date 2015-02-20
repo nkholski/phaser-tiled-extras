@@ -95,7 +95,7 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
 
 
 Phaser.Tilemap.prototype.defineTriggers = function() {
-    this.setDefault();
+    this.setCurrentMap();
     if (!this.objects.hasOwnProperty("triggers")) {
         this.triggers = null;
         this.triggerNames = null;

@@ -11,7 +11,6 @@ function preload() {
 
   game.load.tilemap('map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON);
   game.load.image('tileset', 'assets/tileset.png');
-  game.load.image('ship', 'assets/ship.png');
   game.load.image('marioClouds', 'assets/Mario_Clouds_small.png');
   game.load.image('motherBrain', 'assets/motherBrain.png');
 
@@ -20,7 +19,7 @@ function preload() {
 
 }
 
-var ship;
+var mario;
 var map;
 var layers = [];
 var cursors;
@@ -54,35 +53,34 @@ function create() {
   //  required. There is also a parameter to control optimising the map build.
   //game.physics.arcade.convertTilemap(map, layers[0]);
 
-  ship = game.add.sprite(200, 200, 'mario');
-  ship.animations.add('walk', ['marioWalk0', 'marioWalk1', 'marioWalk2', 'marioWalk1'], 10, true);
-  ship.animations.add('turn', ['marioTurn']);
-  ship.animations.add('bow', ['marioBow']);
-  ship.animations.add('stand', ['marioStand']);
-  ship.animations.add('jump', ['marioJump']);
-  this.game.physics.enable(ship);
-  ship.anchor.setTo(0.5, 0.5);
-  ship.body.maxVelocity.x = 150;
-  ship.body.maxVelocity.y = 300;
-  ship.body.setSize(12,28,2,3);
-  ship.name = "Mario";
-  //globals.balloon.animations.add("default", ["ugh0", "ugh1", "ugh2", "ugh3", "ugh4"], 20, true);
-  ship.play('walk');
+  mario = game.add.sprite(200, 200, 'mario');
+  mario.animations.add('walk', ['marioWalk0', 'marioWalk1', 'marioWalk2', 'marioWalk1'], 10, true);
+  mario.animations.add('turn', ['marioTurn']);
+  mario.animations.add('bow', ['marioBow']);
+  mario.animations.add('stand', ['marioStand']);
+  mario.animations.add('jump', ['marioJump']);
+  this.game.physics.enable(mario);
+  mario.anchor.setTo(0.5, 0.5);
+  mario.body.maxVelocity.x = 150;
+  mario.body.maxVelocity.y = 300;
+  mario.body.setSize(12,28,2,2);
+  mario.name = "Mario";
+  mario.play('walk');
 
 
 
-  this.game.physics.enable(ship);
-  ship.body.allowGravity = true;
+  this.game.physics.enable(mario);
+  mario.body.allowGravity = true;
 
 
 
 
   spriteGroup = game.add.group();
-  spriteGroup.add(ship);
+  spriteGroup.add(mario);
 
-  game.camera.follow(ship);
+  game.camera.follow(mario);
 
-  //  By default the ship will collide with the World bounds,
+  //  By default the mario will collide with the World bounds,
   //  however because you have changed the size of the world (via layer.resizeWorld) to match the tilemap
   //  you need to rebuild the physics world boundary as well. The following
   //  line does that. The first 4 parameters control if you need a boundary on the left, right, top and bottom of your world.
@@ -90,8 +88,8 @@ function create() {
   //  that, so it's set to false. But if you had custom collision groups set-up then you would need this set to true.
   //  game.physics.p2.setBoundsToWorld(true, true, true, true, false);
 
-  //  Even after the world boundary is set-up you can still toggle if the ship collides or not with this:
-  // ship.body.collideWorldBounds = false;
+  //  Even after the world boundary is set-up you can still toggle if the mario collides or not with this:
+  // mario.body.collideWorldBounds = false;
 
   cursors = game.input.keyboard.createCursorKeys();
   loadSprites();
@@ -107,34 +105,34 @@ function update() {
 
   this.physics.arcade.collide(spriteGroup, layers[0]);
 
-//  this.physics.arcade.collide(ship, layers[0]);
+//  this.physics.arcade.collide(mario, layers[0]);
   if (cursors.left.isDown) {
-    ship.body.acceleration.x = -800;
-    ship.scale.x = -1;
+    mario.body.acceleration.x = -800;
+    mario.scale.x = -1;
 
   } else if (cursors.right.isDown) {
-    ship.body.acceleration.x = 800;
-    ship.scale.x = 1;
+    mario.body.acceleration.x = 800;
+    mario.scale.x = 1;
 
   } else {
-    ship.body.acceleration.x = 0;
-    ship.body.velocity.x *= 0.5;
+    mario.body.acceleration.x = 0;
+    mario.body.velocity.x *= 0.5;
 
 
   }
 
-  if (cursors.up.isDown && (ship.body.blocked.down || ship.body.touching.down)) {
-    ship.body.velocity.y = -200;
+  if (cursors.up.isDown && (mario.body.blocked.down || mario.body.touching.down)) {
+    mario.body.velocity.y = -200;
   } else if (cursors.down.isDown) {
-    //ship.body.velocity.y = 300;
+    //mario.body.velocity.y = 300;
 
   }
 
 
-  if (ship.body.velocity.y != 0 && (!ship.body.blocked.down && !ship.body.touching.down)) {
+  if (mario.body.velocity.y != 0 && (!mario.body.blocked.down && !mario.body.touching.down)) {
     animation = "jump";
-  } else if (Math.abs(ship.body.velocity.x) > 1) {
-    if (((ship.body.acceleration.x < 0 && ship.body.velocity.x > 0) || (ship.body.acceleration.x > 0 && ship.body.velocity.x < 0))) {
+  } else if (Math.abs(mario.body.velocity.x) > 1) {
+    if (((mario.body.acceleration.x < 0 && mario.body.velocity.x > 0) || (mario.body.acceleration.x > 0 && mario.body.velocity.x < 0))) {
       animation = "turn";
     } else {
       animation = "walk";
@@ -144,20 +142,20 @@ function update() {
     animation = "stand";
   }
 
-  if(ship.animations.currentAnim.name !== animation){
-    ship.play(animation);
+  if(mario.animations.currentAnim.name !== animation){
+    mario.play(animation);
   }
 
 
-  if ((Math.abs(ship.body.velocity.x) > 1) && ((ship.body.acceleration.x < 0 && ship.body.velocity.x > 0) || (ship.body.acceleration.x > 0 && ship.body.velocity.x < 0))) {
-    ship.play("turn");
+  if ((Math.abs(mario.body.velocity.x) > 1) && ((mario.body.acceleration.x < 0 && mario.body.velocity.x > 0) || (mario.body.acceleration.x > 0 && mario.body.velocity.x < 0))) {
+    mario.play("turn");
   }
 
 
 
-//  this.physics.arcade.collide(ship, layers[1]);
+//  this.physics.arcade.collide(mario, layers[1]);
 
-  //map.checkTriggers(ship);
+  //map.checkTriggers(mario);
 
   map.checkTriggers(spriteGroup);
 
@@ -165,11 +163,11 @@ function update() {
 
 
 function render(){
-  //debug.body(ship);
+  //debug.body(mario);
   return;
 
-  game.debug.spriteInfo(ship, 32, 32);
-  game.debug.body(ship);
+  game.debug.spriteInfo(mario, 32, 32);
+  game.debug.body(mario);
 
 }
 

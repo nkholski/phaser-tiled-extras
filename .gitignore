@@ -7,3 +7,5 @@ node_modules
 *~
 planning.txt
 help.txt
+src/experimental
+src/experimental/**

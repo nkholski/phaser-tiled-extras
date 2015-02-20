@@ -1,4 +1,9 @@
 Phaser.Tilemap.prototype.getImageLayerByName = function(layerName) {
+  /**
+  * Takes a imageLayer name as set as name property in Tiled and return corresponding tileSprite or null if nothing is found.
+  * @param {string} [name=null] - Name of imageLayer set in Tiled.
+  *
+  */
     for (var i in this.imageLayers) {
         if (this.imageLayers[i].name === layerName) {
             return this.imageLayers[i];
@@ -8,9 +13,45 @@ Phaser.Tilemap.prototype.getImageLayerByName = function(layerName) {
 };
 
 
-// Todo: Both tilesprites and sprites???
 Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
-    this.setDefault();
+  /**
+  * Loads one or all imageLayers and applies defined properties on it.
+  * @param {string} [layerName=null] - Name of imageLayer as set in Tiled. If omitted, all layers will be loaded.
+  * @param {string} [definedImageKey=null] - Name of imageKey to use. If omitted, properties.key set in Tiled, imageKey matching layer name and image layer file name matching cached image file name will be loaded, in that order. Recommended to ommit.
+  *
+
+  TODO: Sprites instead of TileSprites when possible?
+
+  ==Supported properties from Tiled==
+
+  Built in properties:
+  name (string) - Name of layer, used for finding ImageKey if not defined and to find layer by searching by name.
+  position.x
+  position.y
+  opacity
+  visible
+  image
+  (Transparent color is not supported).
+
+  Custom properties:
+  key - Name of imageKey to use (recommended method).
+  right
+  bottom - push image to bottom of screen, adjusted by value of properties.bottom (properties.bottom - 32 means it will be 32px above bottom of the screen). Overrides the y value set in Tiled.
+  left
+  repeat - Repeat will make the image to repeat within a tilesprite and fit the image to the full screen. repeat-x and repeat-y will do that horizontally or vertically.
+  repeat-x (fixa om från som det är nu)
+  repeat-y
+  tint  - sets tint for the tileSprite
+  scale - sets scale of tileSprite to {x: properties.scale, y: properties.scale}
+  scale.x and properties.scale.y as above but separately.
+  velocity
+  velocity.x
+  velocity.y
+  parallax
+  parallax.x (ej implementerat)
+  parallax.y (ej implementerat)
+  */
+    this.setCurrentMap();
     var imageKey, image, object;
     var layers = this.game.cache._tilemaps[this.key].data.layers;
     var game = this.game;

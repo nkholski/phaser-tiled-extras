@@ -1,6 +1,29 @@
+/*
+
+SNYGGARE:
+Phaser.Physics.Arcade.prototype.constructor = Phaser.Physics.Arcade;
+Phaser.Physics.Arcade.prototype = {
+
+går det att göra
+map.defineTriggers gör:
+Phaser.Sprite.checkTriggers = function(checkTriggers.bind(map));
+
+sprite.checkTriggers():
+
+
+}*/
+
 
 // FUNKAR INTE HELT. GRAVITATION...
+
+
 Phaser.Tilemap.prototype.loadSprites = function(layerName, defaultImageKey, group) {
+  /**
+  * Takes a GID from Tiled and return as an object tileProperties set in the editor.
+  * Will return empty object if no properties has been set, null if Gid lookup failed.
+  * @param {integer} [value=null] - Gid as defined by Tiled.
+  *
+  */
     if (!layerName) {
         layerName = "sprites";
     }
