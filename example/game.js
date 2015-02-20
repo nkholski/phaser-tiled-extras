@@ -4,7 +4,6 @@ var game = new Phaser.Game(320, 192, Phaser.AUTO, 'phaser-example', {
   update: update,
   render: render
 });
-var writeTile = true;
 
 function preload() {
   game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
