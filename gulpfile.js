@@ -13,15 +13,12 @@ gulp.task('clean', function(cb) {
 
 //gulp.task('scripts', ['clean'], function() {
 gulp.task('scripts', [], function() {
-  // Minify and copy all JavaScript (except vendor scripts)
-  // with sourcemaps all the way down
+  // Minify and copy all JavaScript
   return gulp.src(paths.scripts)
-  //.pipe(sourcemaps.init())
   .pipe(concat('phaser-tiled-extras.js'))
   .pipe(gulp.dest('build'))
   .pipe(uglify())
   .pipe(concat('phaser-tiled-extras.min.js'))
-  //.pipe(sourcemaps.write())
   .pipe(gulp.dest('build'));
 });
 

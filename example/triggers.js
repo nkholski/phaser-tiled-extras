@@ -25,7 +25,7 @@ var triggers = {
     if (!trigger.trigged) {
       return;
     }
-    switch (trigger.arguments.direction + triggers.clockWiseRunVars.lastDirection) {
+    switch (trigger.args.direction + triggers.clockWiseRunVars.lastDirection) {
       case "nw":
       case "en":
       case "se":
@@ -43,7 +43,7 @@ var triggers = {
         // moving in the wrong direction
         triggers.clockWiseRunVars.count = 0;
     }
-    triggers.clockWiseRunVars.lastDirection = trigger.arguments.direction;
+    triggers.clockWiseRunVars.lastDirection = trigger.args.direction;
 
     if(triggers.clockWiseRunVars.count>6){
       game.add.tween(map.getImageLayerByName("motherBrain")).to( { alpha: 1 }, 2000, Phaser.Easing.Bounce.In, true);
@@ -80,7 +80,7 @@ var triggers = {
     }
 
     // box was set as property in Tiled
-    var coords = map.triggers[0].arguments.box.split(",");
+    var coords = map.triggers[0].args.box.split(",");
     coords = coords.map(function(x) {
       return parseInt(x, 10);
     });

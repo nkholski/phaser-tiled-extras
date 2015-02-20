@@ -7,9 +7,11 @@ Phaser.Tilemap.prototype.getImageLayerByName = function(layerName) {
     return null;
 };
 
+
+// Todo: Both tilesprites and sprites???
 Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
     this.setDefault();
-    var imageKey, image;
+    var imageKey, image, object;
     var layers = this.game.cache._tilemaps[this.key].data.layers;
     var game = this.game;
     var tileSpriteArray = []; // Return value
@@ -60,20 +62,32 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
 
                 object.posFixedToCamera = {
                     x: false,
-                    y: false,
-                }
+                    y: false
+                };
                 object.relativePosition = {
                     x: object.x,
                     y: object.y
-                }
-                if (layers[i].properties.hasOwnProperty('bottom')) {
-                    object.y = this.heightInPixels - image.data.height + parseInt(layers[i].properties.bottom);
+                };
 
+                // TODO: Strech = repeat ==> Doesn't move other side but streches Image-size
+                //                scale ==> -"-, but scales the containing Image
+                //                none ==> default (move image) as below:
+                if (layers[i].properties.hasOwnProperty('bottom')) {
+                    object.y = this.heightInPixels - image.data.height + parseInt(layers[i].properties.bottom, 10);
+                }
+                else if (layers[i].properties.hasOwnProperty('top')) { // Untested
+                    object.y = parseInt(layers[i].properties.top, 10);
+                }
+                if (layers[i].properties.hasOwnProperty('right')) { // Untested
+                    object.x = this.widthInPixels - image.data.width + parseInt(layers[i].properties.right, 10);
+                }
+                if (layers[i].properties.hasOwnProperty('left')) { // Untested
+                    object.y = parseInt(layers[i].properties.left, 10);
                 }
 
                 if (layers[i].properties.hasOwnProperty('imageRepeat')) {
                     switch (layers[i].properties.imageRepeat) {
-                        case 'repeat': // TODO: repeated with out filling screen.
+                        case 'repeat': // TODO: repeated without filling screen.
                             object.x = 0;
                             object.y = 0;
                             object.width = game.width;
@@ -86,9 +100,9 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
                             object.width = game.width;
                             object.posFixedToCamera.x = true;
                             break;
-                        case 'repeat-y':
+                        case 'repeat-y': // Untested
                             object.y = 0;
-                            object.width = game.width;
+                            object.height = game.height;
                             object.posFixedToCamera.y = true;
                             break;
                     }
@@ -107,10 +121,10 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
                     object.height /= object.scale.y;
                 }
                 if (layers[i].properties.hasOwnProperty('scale.x')) {
-                    object.scale.x = parseFloat(layers[i].properties["scale.x"]);
+                    object.scale.x = parseFloat(layers[i].properties["scale.x"],10);
                 }
                 if (layers[i].properties.hasOwnProperty('scale.y')) {
-                    object.scale.y = parseFloat(layers[i].properties["scale.y"]);
+                    object.scale.y = parseFloat(layers[i].properties["scale.y"],10);
                 }
                 object.displace = {
                     x: 0,
@@ -131,24 +145,20 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
                 object.velocity.x = layers[i].properties.hasOwnProperty('velocity.x') ? parseFloat(layers[i].properties["velocity.x"]) : object.velocity.x;
                 object.velocity.y = layers[i].properties.hasOwnProperty('velocity.y') ? parseFloat(layers[i].properties["velocity.y"]) : object.velocity.y;
 
-                //object.angle = 5;
-
                 object.alpha = layers[i].opacity;
+
                 object.parallax = {
                     x: 1,
                     y: 1
-                }
+                };
                 if (layers[i].properties.hasOwnProperty('parallax') && parseFloat(layers[i].properties.parallax) > 0) {
                     object.parallax = {
                         x: parseFloat(layers[i].properties.parallax),
                         y: parseFloat(layers[i].properties.parallax)
-                    }
-
+                    };
                 }
 
                 object.name = layers[i].name;
-
-
                 tileSpriteArray.push(object);
                 this.imageLayers.push(object);
             }
