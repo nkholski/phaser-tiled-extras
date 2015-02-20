@@ -201,3 +201,38 @@ pushBlock.prototype.update = function() {
   this.body.velocity.x/=1.2;
 
 };
+
+
+// Maybees
+
+function cloudHandler(object, layerObject, clouding){
+
+    if (object.type == Phaser.SPRITE || object.type == Phaser.TILESPRITE)
+    {
+      this.collideSpriteVsTilemapLayer(layerObject, object, collideCallback, processCallback, callbackContext);
+    }
+    else if (object2.type == Phaser.GROUP || object2.type == Phaser.EMITTER)
+    {
+      this.collideGroupVsTilemapLayer(layerObject, object, collideCallback, processCallback, callbackContext);
+    }
+
+
+}
+
+function cloudHandle_OLD(object1, layerObject){
+  this._result = false;
+  this._total = 0;
+
+  else if (Array.isArray(object1))
+  {
+    for (var i = 0,  len = object1.length; i < len; i++)
+    {
+      this.collideHandler(object1[i], layerObject, null, null, null, true);
+    }
+  }
+  else
+  {
+    this.collideHandler(object1, layerObject, null, null, null, true);
+  }
+  return (this._total > 0);
+}
