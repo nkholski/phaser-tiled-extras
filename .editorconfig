@@ -1,4 +1,5 @@
 # http://editorconfig.org
+# Copied from Phaser git repository
 root = true
 
 [*]
