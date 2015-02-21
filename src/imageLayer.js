@@ -19,37 +19,7 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
   * @param {string} [layerName=null] - Name of imageLayer as set in Tiled. If omitted, all layers will be loaded.
   * @param {string} [definedImageKey=null] - Name of imageKey to use. If omitted, properties.key set in Tiled, imageKey matching layer name and image layer file name matching cached image file name will be loaded, in that order. Recommended to ommit.
   *
-
-  TODO: Sprites instead of TileSprites when possible?
-
-  ==Supported properties from Tiled==
-
-  Built in properties:
-  name (string) - Name of layer, used for finding ImageKey if not defined and to find layer by searching by name.
-  position.x
-  position.y
-  opacity
-  visible
-  image
-  (Transparent color is not supported).
-
-  Custom properties:
-  key - Name of imageKey to use (recommended method).
-  right
-  bottom - push image to bottom of screen, adjusted by value of properties.bottom (properties.bottom - 32 means it will be 32px above bottom of the screen). Overrides the y value set in Tiled.
-  left
-  repeat - Repeat will make the image to repeat within a tilesprite and fit the image to the full screen. repeat-x and repeat-y will do that horizontally or vertically.
-  repeat-x (fixa om från som det är nu)
-  repeat-y
-  tint  - sets tint for the tileSprite
-  scale - sets scale of tileSprite to {x: properties.scale, y: properties.scale}
-  scale.x and properties.scale.y as above but separately.
-  velocity
-  velocity.x
-  velocity.y
-  parallax
-  parallax.x (ej implementerat)
-  parallax.y (ej implementerat)
+  * TODO: Sprites instead of TileSprites when possible?
   */
     this.setCurrentMap();
     var imageKey, image, object;
@@ -126,28 +96,25 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
                     object.y = parseInt(layers[i].properties.left, 10);
                 }
 
-                if (layers[i].properties.hasOwnProperty('imageRepeat')) {
-                    switch (layers[i].properties.imageRepeat) {
-                        case 'repeat': // TODO: repeated without filling screen.
-                            object.x = 0;
-                            object.y = 0;
-                            object.width = game.width;
-                            object.height = game.height;
-                            object.posFixedToCamera.x = true;
-                            object.posFixedToCamera.y = true;
-                            break;
-                        case 'repeat-x':
-                            object.x = 0;
-                            object.width = game.width;
-                            object.posFixedToCamera.x = true;
-                            break;
-                        case 'repeat-y': // Untested
-                            object.y = 0;
-                            object.height = game.height;
-                            object.posFixedToCamera.y = true;
-                            break;
-                    }
+                if (layers[i].properties.hasOwnProperty('repeat') && layers[i].properties.repeat == "true") {
+                    object.x = 0;
+                    object.y = 0;
+                    object.width = game.width;
+                    object.height = game.height;
+                    object.posFixedToCamera.x = true;
+                    object.posFixedToCamera.y = true;
                 }
+                if (layers[i].properties.hasOwnProperty('repeat-x') && layers[i].properties["repeat-x"] == "true") {
+                    object.x = 0;
+                    object.width = game.width;
+                    object.posFixedToCamera.x = true;
+                }
+                if (layers[i].properties.hasOwnProperty('repeat-y') && layers[i].properties["repeat-y"] == "true") {
+                    object.y = 0;
+                    object.height = game.height;
+                    object.posFixedToCamera.y = true;
+                }
+
 
                 if (layers[i].properties.hasOwnProperty('tint')) {
                     object.tint = layers[i].properties.tint;
@@ -179,7 +146,7 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
                     x: 0,
                     y: 0
                 };
-                if (layers[i].properties.hasOwnProperty('velocity')) {
+                if (layers[i].properties.hasOwnProperty('velocity')) { // Stupid?!
                     object.velocity.x = parseFloat(layers[i].properties.velocity);
                     object.velocity.y = parseFloat(layers[i].properties.velocity);
                 }

@@ -3,10 +3,11 @@ Phaser.Tilemap.prototype.getTriggerByName = function(name) {
 };
 
 Phaser.Tilemap.prototype.checkTriggers = function(object) {
-    /* Object:
-    Sprite
-    Group
-    Phaser.point / {x,y}
+    /**
+    * Check if object triggers the triggers and calls callbacks.
+    * @param {object} [object=null] - Sprite or Group to check.
+    *
+    * TODO: Spritetiles? Call for a Phaser.point without graphical object?
     */
     var offset, objectArray, objectBounds;
 
@@ -18,17 +19,16 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
         return;
     }
 
-
     switch (object.type) {
         case 0: // Sprite
             offset = {
                 x: 0,
                 y: 0
-            }; // TODO: BUG??? UNTESTED Men om den är i en group??!
+            }; // TODO: Untested. Possible bug if object is within an group.
             objectArray = [object];
             break;
         case 7: // Group
-            offset = {
+            offset = { // Adjust to group position
                 x: object.x,
                 y: object.y
             };
@@ -39,11 +39,10 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
     for (var o in objectArray) {
         object = objectArray[o];
         var objectBounds = {
-            leftX: object.x + offset.x,
-            topY: object.y + offset.y,
-            toX: object.x + offset.x,
-            rightX: object.x + offset.x,
-            rightY: object.y + offset.y,
+            left: object.x + offset.x,
+            right: object.x + offset.x,
+            top: object.y + offset.y,
+            bottom: object.y + offset.y,
             anchorX: object.x + offset.x,
             anchorY: object.y + offset.y
         };
@@ -74,8 +73,8 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
             }
 
 
-            // detectAnchorOnly
-            if (objectBounds.anchorX < this.triggers[i].x1 && objectBounds.anchorX > this.triggers[i].x0 && objectBounds.anchorY < this.triggers[i].y1 && objectBounds.anchorY > this.triggers[i].y0) {
+            // detectAnchorOnly, Quicker
+            if (objectBounds.anchorX < this.triggers[i].area.x2 && objectBounds.anchorX > this.triggers[i].area.x && objectBounds.anchorY < this.triggers[i].area.y2 && objectBounds.anchorY > this.triggers[i].area.y) {
                 this.triggers[i].trigged = true;
                 this.triggers[i].endorsers.push(object);
                 if (this.triggers[i].callback) {
@@ -87,6 +86,16 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
                     this.triggers[i].callback(this.triggers[i], object);
                 }
             }
+
+            // Detect body
+            //if(checkCoord(x,y)){}
+
+            var checkCoord = function(x,y){
+                return ((x < this.triggers[i].area.x2 && x > this.triggers[i].area.x && y < this.triggers[i].area.y2 && y > this.triggers[i].area.y))
+            };
+
+
+
 
         }
     }
@@ -161,12 +170,6 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
                 x2: triggers[i].x + triggers[i].width,
                 y2: triggers[i].y + triggers[i].height
             },
-            x0: triggers[i].x,
-            y0: triggers[i].y,
-            width: triggers[i].width,
-            height: triggers[i].height,
-            x1: triggers[i].x + triggers[i].width,
-            y1: triggers[i].y + triggers[i].height,
             trigged: false,
             wasTrigged: false,
             endorsers: [],

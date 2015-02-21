@@ -7,6 +7,7 @@ Phaser.Plugin.TiledExtras = function(game, parent) {
     this.name = "tiledExtras";
     this.map = null;
     this.parent = parent;
+    //this.debug = true;
 };
 Phaser.Plugin.TiledExtras.prototype = Object.create(Phaser.Plugin.prototype);
 Phaser.Plugin.TiledExtras.prototype.constructor = Phaser.Plugin.TiledExtras;
@@ -36,7 +37,6 @@ Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
             if (map.imageLayers[i].posFixedToCamera.x) {
                 map.imageLayers[i].offset.x += (map.imageLayers[i].x - map.game.camera.x) * map.imageLayers[i].parallax.x;
                 map.imageLayers[i].x = map.game.camera.x;
-
             }
             if (map.imageLayers[i].posFixedToCamera.y) {
                 map.imageLayers[i].offset.y += (map.imageLayers[i].y - map.game.camera.y) * map.imageLayers[i].parallax.y;
@@ -49,6 +49,11 @@ Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
 
     }
 };
+
+Phaser.Plugin.TiledExtras.prototype.render = function() {
+    if(!this.debug){return;}
+    console.log("hej");
+}
 
 Phaser.Tilemap.prototype.setCurrentMap = function() {
     /**

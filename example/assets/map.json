@@ -7,9 +7,9 @@
          "opacity":0.600000023841858,
          "properties":
             {
-             "imageRepeat":"repeat",
              "key":"marioClouds",
              "parallax":"0.7",
+             "repeat":"true",
              "scale":"0.7",
              "velocity.x":"10"
             },
@@ -26,9 +26,9 @@
          "opacity":1,
          "properties":
             {
-             "imageRepeat":"repeat",
              "key":"marioClouds",
              "parallax":"0.7",
+             "repeat":"true",
              "velocity.x":"20"
             },
          "type":"imagelayer",
@@ -45,9 +45,9 @@
          "properties":
             {
              "bottom":"-16",
-             "imageRepeat":"repeat-x",
              "key":"background",
-             "parallax":"0.9"
+             "parallax":"0.9",
+             "repeat-x":"true"
             },
          "type":"imagelayer",
          "visible":true,
