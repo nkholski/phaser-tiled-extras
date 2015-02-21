@@ -8,15 +8,11 @@ var game = new Phaser.Game(320, 192, Phaser.AUTO, 'phaser-example', {
 function preload() {
   game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
   game.load.atlas('mario', 'assets/spritesheet.png', 'assets/spritesheet.json');
-
   game.load.tilemap('map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON);
   game.load.image('tileset', 'assets/tileset.png');
   game.load.image('marioClouds', 'assets/Mario_Clouds_small.png');
   game.load.image('motherBrain', 'assets/motherBrain.png');
-
   game.load.image('background', 'assets/background.png');
-
-
 }
 
 var mario;

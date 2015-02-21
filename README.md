@@ -8,14 +8,60 @@ The plugin will not improve performance. For incresed performance I recommend th
 This is highly experimental at the moment, and ideas are added and removed as I go, so does the solutions. My aim is to add stuff I use in my game to a separate plugin and when the features feels kind of stable I will start to figure out how to clean it up and present it.
 
 Planned features:
-* Animated tiles
 * Triggers in Object layer
 * Collisions defined in Tiled. (CollideUp etc.)
+* Image layer
 
 Maybes:
 * Images? /imagelayer
+* Animated tiles
 * More types of objects
-* name to gid
+
+
+##Phaser.Tilemap.prototype.addImageLayer##
+
+###Built in properties:###
+Property|Description
+--------|-----------
+name (string)|Name of layer, used for finding ImageKey if not defined and to find layer by searching by name.
+position.x|Horizontal position, set by moving layer in Tiled or editing the value
+position.y|Vertical position, set by moving layer in Tiled or editing the value
+opacity|Will be used as tileSprite alpha
+visible|Sets the exists value of the tileSprite
+image|If no key is defined, it will be used to identify imageKey to use.
+Transparent color| Not supported.
+
+###Custom properties:###
+key - Name of imageKey to use (recommended method).
+right
+bottom - push image to bottom of screen, adjusted by value of properties.bottom (properties.bottom - 32 means it will be 32px above bottom of the screen). Overrides the y value set in Tiled.
+left
+repeat - Repeat will make the image to repeat within a tilesprite and fit the image to the full screen. repeat-x and repeat-y will do that horizontally or vertically.
+repeat-x (fixa om från som det är nu)
+repeat-y
+tint  - sets tint for the tileSprite
+scale - sets scale of tileSprite to {x: properties.scale, y: properties.scale}
+scale.x and properties.scale.y as above but separately.
+velocity
+velocity.x
+velocity.y
+parallax
+parallax.x (ej implementerat)
+parallax.y (ej implementerat)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Tile properties
 collideAll      Sets collision to it's value in all directions (true/false). Set to false by default.

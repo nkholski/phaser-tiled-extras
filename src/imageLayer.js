@@ -199,6 +199,10 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
                     };
                 }
 
+                if(layers[i].visible === "false"){
+                    object.exists = false;
+                }
+
                 object.name = layers[i].name;
                 tileSpriteArray.push(object);
                 this.imageLayers.push(object);
