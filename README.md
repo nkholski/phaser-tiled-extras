@@ -20,7 +20,7 @@ Maybes:
 
 ##Phaser.Tilemap.prototype.addImageLayer##
 
-###Built in properties:###
+####Built in properties:####
 Property|Description
 --------|-----------
 name (string)|Name of layer, used for finding ImageKey if not defined and to find layer by searching by name.
