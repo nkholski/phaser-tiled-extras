@@ -7,7 +7,7 @@ Phaser.Plugin.TiledExtras = function(game, parent) {
     this.name = "tiledExtras";
     this.map = null;
     this.parent = parent;
-    //this.debug = true;
+    this.doDebug = true;
 };
 Phaser.Plugin.TiledExtras.prototype = Object.create(Phaser.Plugin.prototype);
 Phaser.Plugin.TiledExtras.prototype.constructor = Phaser.Plugin.TiledExtras;
@@ -51,8 +51,28 @@ Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
 };
 
 Phaser.Plugin.TiledExtras.prototype.render = function() {
-    if(!this.debug){return;}
-    console.log("hej");
+    var color;
+    if (!this.doDebug) {
+        return;
+    }
+    //console.log("hej");
+    for (var i in this.map.triggers) {
+    //    console.log(this.map.triggers[i]);
+    color = 'rgba(100,100,255,0.9';
+    if(this.map.triggers[i].trigged){
+        color = 'rgba(255,100,100,0.9';
+    }
+    if(!this.map.triggers[i].enabled){
+        color = 'rgba(100,100,100,0.9';
+    }
+        game.debug.geom({
+            x: this.map.triggers[i].area.x,
+            y: this.map.triggers[i].area.y,
+            width: this.map.triggers[i].area.width,
+            height: this.map.triggers[i].area.height
+        }, color , true, 1);
+
+    }
 }
 
 Phaser.Tilemap.prototype.setCurrentMap = function() {
