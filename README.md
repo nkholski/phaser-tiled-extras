@@ -9,13 +9,13 @@ This is highly experimental at the moment, and ideas are added and removed as I 
 
 Planned features:
 * Triggers in Object layer
+* Animated tiles
 * Collisions defined in Tiled. (CollideUp etc.)
 * Image layer
 
 Maybes:
-* Images? /imagelayer
-* Animated tiles
 * More types of objects
+* Autoload sprites
 
 
 ##Phaser.Tilemap.prototype.addImageLayer##
