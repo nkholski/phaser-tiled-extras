@@ -39,7 +39,8 @@ top (integer)|Push the image to the top, and adjust the vertical position by the
 right (integer)|See top
 bottom (integer)|See top
 left (integer)|See top
-repeat (boolean)|Make the image to repeat within a tilesprite and fit the image to the full screen. repeat-x repeat-x (boolean)| As repeat but only horizontally.
+repeat (boolean)|Make the image to repeat within a tilesprite and fit the image to the full screen.
+repeat-x (boolean)| As repeat but only horizontally.
 repeat-y (boolean)| As repeat but only vertically.
 tint (hexadecimal)|Sets tint for the tileSprite (will not show any effect in Tiled). Valid values #000000 to #FFFFFF.
 scale (float)|Sets scale of tileSprite to {x: properties.scale, y: properties.scale}
