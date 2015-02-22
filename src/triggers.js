@@ -39,12 +39,12 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
     for (var o in objectArray) {
         object = objectArray[o];
         var objectBounds = {
-            left: object.x + offset.x,
-            right: object.x + offset.x,
-            top: object.y + offset.y,
-            bottom: object.y + offset.y,
-            anchorX: object.x + offset.x,
-            anchorY: object.y + offset.y
+            left: object.body.position.x ,
+            right: object.body.position.x  +  object.body.width - (Math.abs(object.width)-object.body.width),
+            top: object.body.position.y,
+            bottom: object.body.position.y  +  object.body.height - (Math.abs(object.height)-object.body.height),
+            anchorX: object.x,
+            anchorY: object.y
         };
 
         for (var i in this.triggers) {
@@ -87,12 +87,31 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
                 }
             }
 
+            /*
+            // TODO: Kolla om mitten kolliderar, annars vilken sida det är om rutan och beräkna från den.
             // Detect body
             //if(checkCoord(x,y)){}
+            game.debug.geom({
+              x: objectBounds.anchorX,
+              y: objectBounds.anchorY,
+            }, "rgba(0,0,255,1)" , true, 3);
 
+            game.debug.geom({
+              x: objectBounds.left,
+              y: objectBounds.bottom,
+            }, "rgba(255,0,0,1)" , true, 3);
+            game.debug.geom({
+              x: objectBounds.right,
+              y: objectBounds.bottom,
+            }, "rgba(0,255,0,1)" , true, 3);
+            if(checkCoord(objectBounds.right, objectBounds.top) || checkCoord(objectBounds.right, objectBounds.bottom) || checkCoord(objectBounds.left, objectBounds.top) || checkCoord(objectBounds.left, objectBounds.bottom)){
+              within=true;
+            }
+
+            //if(this.triggers[i].area.x<objectBounds.right && object.objectBounds.left)
             var checkCoord = function(x,y){
                 return ((x < this.triggers[i].area.x2 && x > this.triggers[i].area.x && y < this.triggers[i].area.y2 && y > this.triggers[i].area.y))
-            };
+            };*/
 
 
 

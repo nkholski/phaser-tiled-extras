@@ -1,22 +1,24 @@
-# phaser-tiled-extras
+#phaser-tiled-extras#
 
-#Warning: The plugin is in very early alpha. Not for production use, probably not even any idea for anyone else than me to test yet.
+##Warning: The plugin is under development. It's not fit for production use and may break compatibility between updates.##
 
-This plugin adds additional features from Tiled mapeditor to Phaser 2. It aims to integrate as seemless as possible with unmodified code.
-The plugin will not improve performance. For incresed performance I recommend the far more advanced plugin Phaser-Tiled https://github.com/englercj/phaser-tiled.
+This plugin adds additional features from Tiled mapeditor to Phaser 2. Some of them are built-in in Tiled, and others are custom solutions. The aim is to move reusable code from my projects to this plugin. Another aim is to make it integrate to Phaser 2 as seemless as possible with unmodified code. This is experimental at the moment, and ideas are added and removed as I go, so does the solutions.
 
-This is highly experimental at the moment, and ideas are added and removed as I go, so does the solutions. My aim is to add stuff I use in my game to a separate plugin and when the features feels kind of stable I will start to figure out how to clean it up and present it.
+The plugin will not improve performance. For increased performance (along with additional Tiled features) I recommend the far more advanced plugin Phaser-Tiled: https://github.com/englercj/phaser-tiled.
 
-Planned features:
-* Triggers in Object layer
-* Animated tiles
-* Collisions defined in Tiled. (CollideUp etc.)
-* Image layer
+A demo is up at: http:/dev.niklasberg.se/phaser-tiled-extras/example
+
+Current features:
+|Triggers|Triggers are defined in an Object layer called "Triggers".
+|Tileset propertis|Set collision by collideUp etcetera
+|Image layers|Stuff like parallax and properties such as opacity/alpha
 
 Maybes:
 * More types of objects
 * Autoload sprites
+* Animated tiles
 
+##First (unfinished documentation attempt)##
 
 ##Phaser.Tilemap.prototype.addImageLayer##
 

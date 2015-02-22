@@ -6,7 +6,7 @@ var game = new Phaser.Game(320, 192, Phaser.AUTO, 'phaser-example', {
 });
 
 function preload() {
-  game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+  game.scale.scaleMode = Phaser.ScaleManager.NONE; //Phaser.ScaleManager.SHOW_ALL;
   game.load.atlas('mario', 'assets/spritesheet.png', 'assets/spritesheet.json');
   game.load.tilemap('map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON);
   game.load.image('tileset', 'assets/tileset.png');
@@ -22,6 +22,7 @@ var cursors;
 
 function create() {
   game.add.plugin(Phaser.Plugin.TiledExtras);
+
   game.physics.startSystem(Phaser.Physics.ARCADE);
   this.game.physics.arcade.gravity.y = 300;
 
@@ -59,7 +60,7 @@ function create() {
   mario.anchor.setTo(0.5, 0.5);
   mario.body.maxVelocity.x = 150;
   mario.body.maxVelocity.y = 300;
-  mario.body.setSize(12,28,2,2);
+  mario.body.setSize(12,28,0,2);
   mario.name = "Mario";
   mario.play('walk');
 
@@ -160,10 +161,16 @@ function update() {
 
 function render(){
   //debug.body(mario);
-  return;
+  if(!game.plugins.plugins[0].debug){return;}
 
   game.debug.spriteInfo(mario, 32, 32);
   game.debug.body(mario);
+
+  game.debug.geom({
+    x: mario.x,
+    y: mario.y,
+  }, "rgba(255,255,255,1)" , true, 3);
+
 
 }
 
@@ -171,7 +178,6 @@ function render(){
 function loadSprites(){
 
   map.createFromObjects('sprites', map.tilePropertyToGid("block"), 'mario' , null, true, null, spriteGroup, pushBlock);
-
 
 
 }

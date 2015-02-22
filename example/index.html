@@ -4,19 +4,65 @@
 <head>
     <meta charset="utf-8">
     <title>Phaser Tilemap Extras</title>
+    <style>
+        #info {
+            border: 1px solid black;
+            width: 600px;
+            margin-left: 10px;
+            padding: 5px;
+        }
+    </style>
 </head>
 
 <body>
+    <p><a href="javascript:toggle_debug();" id="debugger">Toggle debug on/off</a>
+        <a href="javascript: game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL; game.scale.startFullScreen(false);">Fullscreen</a>
+    </p>
+    <div id='phaser-example' style='float: left;'></div>
+    <div style='width: 320px; float:left'>
 
-    <script src="../phaser/build/phaser.js"></script>
-    <script src="../src/tiled-extras.js"></script>
-    <script src="../src/triggers.js"></script>
-    <script src="../src/imageLayer.js"></script>
+        <div id="info">
+            <b>Demo features</b>
+            <br>
+            Controls: Arrow keys (up for jump)
+            <br>
+            <br>
+            <b>Image layers</b>
+            <br>
+            <ul>
+                <li>Two cloud layers with the same image but with different opacity/alpha, parallax ratio, scale and velocity set in properties. (The wavy movement is done with at tween from the game)</li>
+                <li>The background layer is locked vertically but is repeating horizontally with a parallax ratio set in properties.</li>
+                <li>One layer iImage with opacity/alpha set to 0. A trigger may set it to alpha = 1.</li>
+            </ul>
+            <b>Triggers</b>
+            <ul>
+                <li>If exactly two objects stays the area under the "cloud box", coins will show up (try to push the blocks!). If the test fails, the coins will go away again.</li>
+                <li>If you jump clockwise a few times around the block to the left of Mario at the starting position, something will happen. If you break the loop you'll have to start over.</li>
+            </ul>
+            <b>Collision set by tile properties</b>
+            <ul>
+                <li>All collision data are defined by tile properties.</li>
+                <li>The animated arrows cannot be passed against the direction of the arrow (the collision information properties are manipulated by the rotation/flipping of the sprite)</li>
+            </ul>
+            <b>Animated tiles</b>
+            A fork allowing animated tiles is used for the demo. If the pull-request for this feature to Phaser is denied, the feature will be added to this plugin instead.
+        </div>
 
-    <script src="triggers.js"></script>
+        <!--<script src="../phaser/build/phaser.js"></script>-->
+        <script src="assets/phaserWithAnimatedTiles.js"></script>
+        <script src="../src/tiled-extras.js"></script>
+        <script src="../src/triggers.js"></script>
+        <script src="../src/imageLayer.js"></script>
 
-    <script src="game.js"></script>
+        <script src="triggers.js"></script>
 
+        <script src="game.js"></script>
+        <script>
+            function toggle_debug() {
+                game.plugins.plugins[0].debug = !game.plugins.plugins[0].debug;
+                game.debug.reset();
+            }
+        </script>
 </body>
 
 </html>

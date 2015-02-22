@@ -1,3 +1,5 @@
+// My first try at Gulp, just a bunch och copy-paste-stuff that seems to work...
+
 var gulp = require('gulp');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
