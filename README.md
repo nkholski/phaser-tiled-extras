@@ -13,7 +13,7 @@ Current features:
 Feature|Description
 -------|-----------
 Triggers|Triggers are defined in an Object layer called "Triggers".
-Tileset propertis|Set collision by collideUp etcetera
+Tileset properties|Set collision by collideUp etcetera
 Image layers|Stuff like parallax and properties such as opacity/alpha
 
 Maybes:
@@ -21,7 +21,7 @@ Maybes:
 * Autoload sprites
 * Animated tiles
 
-##First (unfinished documentation attempt)##
+##First (unfinished) documentation attempt##
 
 ##Phaser.Tilemap.prototype.addImageLayer##
 
