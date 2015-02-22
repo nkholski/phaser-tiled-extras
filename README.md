@@ -9,6 +9,9 @@ The plugin will not improve performance. For increased performance (along with a
 A demo is up at: http:/dev.niklasberg.se/phaser-tiled-extras/example
 
 Current features:
+
+Feature|Description
+-------|-----------
 Triggers|Triggers are defined in an Object layer called "Triggers".
 Tileset propertis|Set collision by collideUp etcetera
 Image layers|Stuff like parallax and properties such as opacity/alpha
