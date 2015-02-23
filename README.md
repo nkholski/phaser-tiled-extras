@@ -2,7 +2,7 @@
 
 ##Warning: The plugin is under development. It's not fit for production use and may break compatibility between updates.##
 
-This plugin adds additional features from Tiled mapeditor to Phaser 2. Some of them are built-in in Tiled, and others are custom solutions. The aim is to move reusable code from my projects to this plugin. Another aim is to make it integrate to Phaser 2 as seemless as possible with unmodified code. This is experimental at the moment, and ideas are added and removed as I go, so does the solutions. Parts of the code is more or less proof-of-concept.
+This plugin adds additional features from Tiled mapeditor to Phaser 2. Some of them are built-in in Tiled, and others are custom solutions. The aim is to move reusable code from my projects to this plugin. Another aim is to make it integrate to Phaser 2 as seemless as possible with unmodified code. This is experimental at the moment, and ideas are added and removed as I go, so does the solutions.
 
 The plugin will not improve performance. For increased performance (along with additional Tiled features) I recommend the far more advanced plugin Phaser-Tiled: https://github.com/englercj/phaser-tiled.
 
@@ -14,6 +14,7 @@ Feature|Description
 Triggers|Triggers are defined in an Object layer called "Triggers".
 Tileset properties|Set collision by collideUp etcetera
 Image layers|Stuff like parallax and properties such as opacity/alpha
+
 All features will be available as stand-alone plugins and as part of the full phaser-tiled-extras plugin.
 
 Maybes:
