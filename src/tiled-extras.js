@@ -1,5 +1,10 @@
 Phaser.Plugin.TiledExtras = function(game, parent) {
     /**
+     *
+     * All tiled-extras features in one Plugin. If you want only single features you can use the corresponding plugins. Don't combine this plugin with single feature plugins.
+     * Current single feature plugins: Triggers
+     * Planned single feature plugins: imageLayers, tilesetProperties
+     * 
      * The plugin object construtor, called by Phaser through Phaser.Game.add.plugin()
      *
      */
