@@ -34,7 +34,7 @@ Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
 
 
         for (var i in map.imageLayers) {
-
+            if(map.imageLayers[i].type == 0){continue;}
             map.imageLayers[i].tilePostionOffset.x += map.imageLayers[i].velocity.x * this.game.time.physicsElapsed;
             map.imageLayers[i].tilePostionOffset.y += map.imageLayers[i].velocity.y * this.game.time.physicsElapsed;
 
@@ -265,5 +265,4 @@ Phaser.TilemapLayer.prototype.updateCollision = function(area, clear) {
         }
     }
     this.map.calculateFaces(this.index);
-
 };
