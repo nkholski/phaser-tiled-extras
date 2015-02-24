@@ -4,7 +4,7 @@ Phaser.Plugin.TiledExtras = function(game, parent) {
      * All tiled-extras features in one Plugin. If you want only single features you can use the corresponding plugins. Don't combine this plugin with single feature plugins.
      * Current single feature plugins: Triggers
      * Planned single feature plugins: imageLayers, tilesetProperties
-     * 
+     *
      * The plugin object construtor, called by Phaser through Phaser.Game.add.plugin()
      *
      */
@@ -35,19 +35,19 @@ Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
 
         for (var i in map.imageLayers) {
 
-            map.imageLayers[i].offset.x += map.imageLayers[i].velocity.x * this.game.time.physicsElapsed;
-            map.imageLayers[i].offset.y += map.imageLayers[i].velocity.y * this.game.time.physicsElapsed;
+            map.imageLayers[i].tilePostionOffset.x += map.imageLayers[i].velocity.x * this.game.time.physicsElapsed;
+            map.imageLayers[i].tilePostionOffset.y += map.imageLayers[i].velocity.y * this.game.time.physicsElapsed;
 
             if (map.imageLayers[i].posFixedToCamera.x) {
-                map.imageLayers[i].offset.x += (map.imageLayers[i].x - map.game.camera.x) * map.imageLayers[i].parallax.x;
+                map.imageLayers[i].tilePostionOffset.x += (map.imageLayers[i].x - map.game.camera.x) * map.imageLayers[i].parallax.x;
                 map.imageLayers[i].x = map.game.camera.x;
             }
             if (map.imageLayers[i].posFixedToCamera.y) {
-                map.imageLayers[i].offset.y += (map.imageLayers[i].y - map.game.camera.y) * map.imageLayers[i].parallax.y;
+                map.imageLayers[i].tilePostionOffset.y += (map.imageLayers[i].y - map.game.camera.y) * map.imageLayers[i].parallax.y;
                 map.imageLayers[i].y = map.game.camera.y;
             }
-            map.imageLayers[i].tilePosition.x = map.imageLayers[i].offset.x + map.imageLayers[i].displace.x;
-            map.imageLayers[i].tilePosition.y = map.imageLayers[i].offset.y + map.imageLayers[i].displace.y;
+            map.imageLayers[i].tilePosition.x = map.imageLayers[i].tilePostionOffset.x + map.imageLayers[i].adjustTilePosition.x;
+            map.imageLayers[i].tilePosition.y = map.imageLayers[i].tilePostionOffset.y + map.imageLayers[i].adjustTilePosition.y;
 
         }
 
@@ -140,6 +140,39 @@ Phaser.Tilemap.prototype.tilePropertyToGid = function(value, property) {
     return false;
 };
 
+Phaser.TilemapLayer.prototype.setCollisionArea = function(collision, area){
+    // Overrides all settings - set collisions where tile !== null
+    // Collision = {collideUp etc}
+    if (area) {
+        var a = {
+            x: area.x,
+            y: area.y,
+            x1: area.x + area.width,
+            y1: area.y + area.height
+        };
+    } else {
+        var a = {
+            x: 0,
+            y: 0,
+            x1: this.map.width,
+            y1: this.map.height
+        };
+    }
+    for (var y = a.y; y < a.y1; y++) {
+        for (var x = a.x; x < a.x1; x++) {
+            tile = this.map.getTile(x, y, this);
+            tile.collideUp = true;
+            tile.collideRight = true;
+            tile.collideDown = true;
+            tile.collideLeft =true;
+            tile.collides = true;
+            tile.faceTop = true;
+            tile.faceRight = true;
+            tile.faceBottom = true;
+            tile.faceLeft =true;
+        }
+    }
+}
 
 Phaser.TilemapLayer.prototype.updateCollision = function(area, clear) {
     /**
@@ -229,10 +262,8 @@ Phaser.TilemapLayer.prototype.updateCollision = function(area, clear) {
             tile.collideDown = tempCol[2];
             tile.collideLeft = tempCol[3];
             tile.collides = tempCol[0] || tempCol[1] || tempCol[2] || tempCol[3];
-            tile.faceTop = tempCol[0];
-            tile.faceRight = tempCol[1];
-            tile.faceBottom = tempCol[2];
-            tile.faceLeft = tempCol[3];
         }
     }
+    this.map.calculateFaces(this.index);
+
 };

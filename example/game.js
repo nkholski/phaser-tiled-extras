@@ -91,8 +91,8 @@ function create() {
   cursors = game.input.keyboard.createCursorKeys();
   loadSprites();
 
-  game.add.tween(map.imageLayers[0].displace).to( { y: 10 }, 2000, Phaser.Easing.Sinusoidal.InOut, true, 0, 1000, true);
-  game.add.tween(map.imageLayers[1].displace).to( { y: 15 }, 2000, Phaser.Easing.Sinusoidal.InOut, true, 0, 1000, true);
+  game.add.tween(map.imageLayers[0].adjustTilePosition).to( { y: 10 }, 2000, Phaser.Easing.Sinusoidal.InOut, true, 0, 1000, true);
+  game.add.tween(map.imageLayers[1].adjustTilePosition).to( { y: 15 }, 2000, Phaser.Easing.Sinusoidal.InOut, true, 0, 1000, true);
 
 }
 

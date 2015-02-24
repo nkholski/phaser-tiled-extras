@@ -6,7 +6,7 @@ This plugin adds additional features from Tiled mapeditor to Phaser 2. Some of t
 
 The plugin will not improve performance. For increased performance (along with additional Tiled features) I recommend the far more advanced plugin Phaser-Tiled: https://github.com/englercj/phaser-tiled.
 
-A demo is up at: http:/dev.niklasberg.se/phaser-tiled-extras/example
+A demo is up at: http://dev.niklasberg.se/phaser-tiled-extras/example
 
 Current features:
 

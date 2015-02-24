@@ -141,7 +141,7 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
         if (layers[i].properties.hasOwnProperty('scale.y')) {
           object.scale.y = parseFloat(layers[i].properties["scale.y"], 10);
         }
-        object.displace = {
+        object.adjustTilePosition = {
           x: 0,
           y: 0
         };
@@ -149,7 +149,7 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
           x: 0,
           y: 0
         };
-        object.offset = {
+        object.tilePostionOffset = {
           x: 0,
           y: 0
         };
