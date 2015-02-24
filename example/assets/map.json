@@ -122,7 +122,8 @@
                  "properties":
                     {
                      "callback":"triggers.clockWiseRun",
-                     "direction":"s"
+                     "direction":"s",
+                     "required":"name==\"Mario\""
                     },
                  "rotation":0,
                  "type":"",
