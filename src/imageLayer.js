@@ -19,8 +19,6 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
      * @param {string} [layerName=null] - Name of imageLayer as set in Tiled. If omitted, all layers will be loaded.
      * @param {string} [definedImageKey=null] - Name of imageKey to use. If omitted, properties.key set in Tiled, imageKey matching layer name and image layer file name matching cached image file name will be loaded, in that order. Recommended to ommit.
      *
-     * TODO: Sprites instead of TileSprites when possible?
-     * TODO: Make default object first, then alter it.
      * TODO: X,Y,Width,Height,X2,Y2, TOP, BOTTOM etc. = Position / Size
      * TODO: repeat, parallax = how to present image (without repeat = strech)
      */
@@ -80,7 +78,7 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
                 // Make default object
                 object = {
                     name: layers[i].name,
-                    canBeSprite: true,
+                    canBeSprite: (layers[i].properties.hasOwnProperty('forceTileSprite') && layers[i].properties.forceTileSprite !== "false") ? false : true,
                     x: layers[i].x,
                     y: layers[i].y,
                     width: image.data.width,
