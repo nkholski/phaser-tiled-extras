@@ -164,6 +164,8 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
                 if (layers[i].properties.hasOwnProperty('scale.y')) {
                     object.scale.y = parseFloat(layers[i].properties["scale.y"], 10);
                 }
+
+                // TODO: Make velocity work for non tileSprites:
                 object.velocity.x = layers[i].properties.hasOwnProperty('velocity.x') ? parseFloat(layers[i].properties["velocity.x"]) : object.velocity.x;
                 object.velocity.y = layers[i].properties.hasOwnProperty('velocity.y') ? parseFloat(layers[i].properties["velocity.y"]) : object.velocity.y;
 

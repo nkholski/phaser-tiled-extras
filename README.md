@@ -1,12 +1,12 @@
-#phaser-tiled-extras#
+# phaser-tiled-extras #
 
-##Warning: The plugin is under development. It's not fit for production use and may break compatibility between updates.##
+## Warning: The plugin is under development. It's not fit for production use and may break compatibility between updates. ##
 
-This plugin adds additional features from Tiled mapeditor to Phaser 2. Some of them are built-in in Tiled, and others are custom solutions. The aim is to move reusable code from my projects to this plugin. Another aim is to make it integrate to Phaser 2 as seemless as possible with unmodified code. This is experimental at the moment, and ideas are added and removed as I go, so does the solutions.
+This plugin adds additional features from Tiled mapeditor to Phaser 2. Some of them are built-in in Tiled, and others are custom solutions. The aim is to move reusable code from my projects to this plugin. Another aim is to make it integrate to Phaser 2 as seamless as possible with unmodified code. This is experimental at the moment, and ideas are added and removed as I go, so does the solutions.
 
 The plugin will not improve performance. For increased performance (along with additional Tiled features) I recommend the far more advanced plugin Phaser-Tiled: https://github.com/englercj/phaser-tiled.
 
-A demo is up at: http://dev.niklasberg.se/phaser-tiled-extras/example
+Check out the online example at: http://dev.niklasberg.se/phaser-tiled-extras/example
 
 Current features:
 
@@ -18,16 +18,14 @@ Image layers|Stuff like parallax and properties such as opacity/alpha
 
 All features will be available as stand-alone plugins and as part of the full phaser-tiled-extras plugin.
 
-Maybes:
-* More types of objects
-* Autoload sprites
-* Animated tiles
+Possible future additions: More types of objects, Autoload sprites, Animated tiles
 
-##First (unfinished) documentation attempt##
+## First (unfinished) documentation attempt: ##
 
-##Phaser.Tilemap.prototype.addImageLayer##
+## Phaser.Tilemap.prototype.addImageLayer ##
 
-####Built in properties:####
+### Properties set in Tiled ###
+#### Built in properties: ####
 Property|Description
 --------|-----------
 name (string)|Name of layer, used for finding ImageKey if not defined and to find layer by searching by name.
@@ -38,7 +36,7 @@ visible (boolean)|Sets the exists value of the tileSprite
 image (string)|If no key is defined, it will be used to identify imageKey to use. (Path is ignored)
 Transparent color (object)| Not supported.
 
-####Custom properties:####
+#### Custom properties: ####
 Property|Description
 --------|-----------
 key (string)|Name of imageKey to use.
@@ -59,13 +57,15 @@ parallax (float)|Defines both vertical and horizontal parallax movement by propo
 parallax.x (float)|TODO: As parallax but only vetically.
 parallax.y (float)|TODO: As parallax but only horizontally.
 
-####Phaser.Tilemap.prototype.checkTriggers####
+### Resulting variables ###
+Phaser.Tilemap.imageLayers, array of tileSprites and/or sprites created by Phaser.Tilemap.defineImageLayers. Additional values:
+
+#### Phaser.Tilemap.prototype.checkTriggers ####
 TODO: Body instead of Anchor
 
-####Phaser.Tilemap.prototype.defineTriggers####
+#### Phaser.Tilemap.prototype.defineTriggers ####
 area,args,callback,detectAnchorOnly,enabled,endorsers,height,name,newLoop,trigged,wasTrigged,width
-forbidden|Properties for objects that are forbidden activate trigger (i.e. ghost=true)
-required|Properties for objects that are required activate trigger (i.e. player=true)
+required|Properties for objects that are required activate trigger (i.e. player=true, ghost!=true or weight>90)
 
 #### Supported Tiled tileset properties####
 Custom property|Description
@@ -82,15 +82,19 @@ required        Properties for objects that are required activate trigger (i.e. 
 function/event        Event related to the trigger
 
 
-// Loading tile properties into collision (layer = Phaser.TilemapLayer):
+## EXAMPLES
+#### Loading tile properties into collision (layer = Phaser.TilemapLayer): ####
+```
 layer.updateCollision(); //Sets all tiles as defined in Tiled
 layer.updateCollision(new Phaser.Rectangle(5,5,10,10)); // As above but only within a rectange 10 tiles wide, and 10 tiles high, starting at x=5, y=5
 layer.updateCollision({x:5, y:5, width: 10, height: 10}); // Same result as above
 layer.updateCollision(null, true); // Clear collision for the whole layer
 layer.updateCollision(new Phaser.Rectangle(0,0,layer.width/2,layer.height/2), true); // Clear collision for the upper left area, one fourth of the full layer.
+```
 
-// map = Phaser.Tilemap
+#### map = Phaser.Tilemap ####
+```
 map.defineTriggers(); // Load triggers into map.triggers
-
 map.checkTriggers(group); //checking triggers and activating events for all within group (group = Phaser.Group)
 map.checkTriggers(sprite); //checking triggers and activating events for all within sprite (sprite = Phaser.Sprite)
+```
