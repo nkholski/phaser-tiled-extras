@@ -4,11 +4,11 @@ Phaser.Tilemap.prototype.getTriggerByName = function(name) {
 
 Phaser.Tilemap.prototype.checkTriggers = function(object) {
     /**
-    * Check if object triggers the triggers and calls callbacks.
-    * @param {object} [object=null] - Sprite or Group to check.
-    *
-    * TODO: Spritetiles? Call for a Phaser.point without graphical object?
-    */
+     * Check if object triggers the triggers and calls callbacks.
+     * @param {object} [object=null] - Sprite or Group to check.
+     *
+     * TODO: Spritetiles? Call for a Phaser.point without graphical object?
+     */
     var offset, objectArray, objectBounds;
 
     if (!this.hasOwnProperty("triggers")) {
@@ -38,11 +38,12 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
 
     for (var o in objectArray) {
         object = objectArray[o];
+
         var objectBounds = {
-            left: object.body.position.x ,
-            right: object.body.position.x  +  object.body.width - (Math.abs(object.width)-object.body.width),
+            left: object.body.position.x,
+            right: object.body.position.x + object.body.width - (Math.abs(object.width) - object.body.width),
             top: object.body.position.y,
-            bottom: object.body.position.y  +  object.body.height - (Math.abs(object.height)-object.body.height),
+            bottom: object.body.position.y + object.body.height - (Math.abs(object.height) - object.body.height),
             anchorX: object.x,
             anchorY: object.y
         };
@@ -51,27 +52,49 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
             if (!this.triggers[i].enabled) {
                 continue;
             }
+
+            // Check Required
+            if (this.triggers[i].required) {
+                switch (this.triggers[i].required.operator) {
+                    case "==":
+                        if (object[this.triggers[i].required.property] != this.triggers[i].required.value) {
+                            continue;
+                        }
+                        break;
+                    case "!=":
+                        if (object[this.triggers[i].required.property] != this.triggers[i].required.value) {
+                            continue;
+                        }
+                        break;
+                    case "<=":
+                        if (object[this.triggers[i].required.property] > this.triggers[i].required.value) {
+                            continue;
+                        }
+                        break;
+                    case ">=":
+                        if (object[this.triggers[i].required.property] < this.triggers[i].required.value) {
+                            continue;
+                        }
+                        break;
+                    case "<":
+                        if (object[this.triggers[i].required.property] >= this.triggers[i].required.value) {
+                            continue;
+                        }
+                        break;
+                    case ">":
+                        if (object[this.triggers[i].required.property] <= this.triggers[i].required.value) {
+                            continue;
+                        }
+                        break;
+                }
+
+            }
+
             if (this.triggers[i].newLoop) {
                 this.triggers[i].wasTrigged = this.triggers[i].trigged;
                 this.triggers[i].endorsers = [];
                 this.triggers[i].newLoop = false;
             }
-            // Skip if object is unable to trigger this trigger
-            if (this.triggers[i].required) {
-                if (object.hasOwnProperty(this.triggers[i].required.property)) {
-                    if (object[this.triggers[i].required.property] !== this.triggers[i].required.value) {
-                        continue;
-                    }
-                }
-            }
-            if (this.triggers[i].forbidden) {
-                if (object.hasOwnProperty(this.triggers[i].forbidden.property)) {
-                    if (object[this.triggers[i].forbidden.property] === this.triggers[i].forbidden.value) {
-                        continue;
-                    }
-                }
-            }
-
 
             // detectAnchorOnly, Quicker
             if (objectBounds.anchorX < this.triggers[i].area.x2 && objectBounds.anchorX > this.triggers[i].area.x && objectBounds.anchorY < this.triggers[i].area.y2 && objectBounds.anchorY > this.triggers[i].area.y) {
@@ -140,47 +163,11 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
         args = {};
         argNames = Object.keys(triggers[i].properties);
 
-        for (var i2 in argNames) {
-            if (argNames[i2] !== "callback" && argNames[i2] !== "required" && argNames[i2] !== "forbidden") {
-                args[argNames[i2]] = triggers[i].properties[argNames[i2]];
-            }
-        }
-
-        if (triggers[i].properties.hasOwnProperty("forbidden")) { // Räcker med bara required?!
-            forbidden = triggers[i].properties.forbidden.split("="); // <= >= === == = < > !=
-            forbidden = {
-                property: forbidden[0],
-                value: (forbidden[1] === "true") ? true : ((forbidden[1] === "false") ? false : forbidden[1])
-            };
-        }
-
-        if (triggers[i].properties.hasOwnProperty("detectAnchorOnly")) {
-            if (triggers[i].properties.detectAnchorOnly !== "false") {
-                triggers[i].properties.detectAnchorOnly = true;
-            }
-        } else {
-            triggers[i].properties.detectAnchorOnly = false;
-        }
-
-        // fix callback
-        var callback = null;
-        if (triggers[i].properties.hasOwnProperty("callback")) {
-            callback = window;
-            var parts = triggers[i].properties.callback.split(".");
-            for (var i2 in parts) {
-                if (callback.hasOwnProperty(parts[i2])) {
-                    callback = callback[parts[i2]];
-                } else {
-                    console.warn("Trigger callback not found: " + parts[i2]);
-                    break;
-                }
-            }
-        }
-
-        this.triggers.push({
+        var trigger = {
+            name: (triggers[i].hasOwnProperty("name")) ? triggers[i].name : null,
             enabled: (!triggers[i].properties.hasOwnProperty("enabled") || (triggers[i].properties.enabled !== "true")),
-            callback: callback,
-            args: args,
+            callback: null,
+            args: [],
             area: {
                 x: triggers[i].x,
                 y: triggers[i].y,
@@ -193,11 +180,68 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
             wasTrigged: false,
             endorsers: [],
             detectAnchorOnly: triggers[i].properties.detectAnchorOnly,
-            forbidden: forbidden,
-            required: required,
-            newLoop: true,
-            name: (triggers[i].hasOwnProperty("name")) ? triggers[i].name : null
-        });
+            required: null,
+            _resetEndorsers: true
+        }
+
+        // Custom arguments
+        for (var i2 in argNames) {
+            if (argNames[i2] !== "callback" && argNames[i2] !== "required") {
+                args[argNames[i2]] = triggers[i].properties[argNames[i2]];
+            }
+        }
+        trigger.args = args;
+
+        // Required value
+        if (triggers[i].properties.hasOwnProperty("required")) {
+            var operators = ["<=", ">=", "==", "<", ">", "!=", false];
+            for (var i2 = 0; i2 < 7; i2++) {
+                if (triggers[i].properties.required.indexOf(operators[i2]) > -1) {
+                    break;
+                }
+            }
+            if (operators[i2]) {
+                required = triggers[i].properties.required.split(operators[i2]); // <= >= === == = < > !=
+                required[1] = required[1].replace(/\"/g, "").replace(/\'/g, "")
+                if (parseFloat(required[1]) == required[1]) { // Floats should be floats...
+                    required[1] = parseFloat(required[1])
+                }
+                trigger.required = {
+                    property: required[0],
+                    operator: operators[i2],
+                    value: (required[1] === "true") ? true : ((required[1] === "false") ? false : required[1])
+                };
+            }
+        }
+
+        // Detection body/point
+        if (triggers[i].properties.hasOwnProperty("detectAnchorOnly")) {
+            if (triggers[i].properties.detectAnchorOnly !== "false") {
+                trigger.detectAnchorOnly = true;
+            }
+        } else {
+            trigger.detectAnchorOnly = false;
+        }
+
+        // Fix callback
+        var callback = null;
+        if (triggers[i].properties.hasOwnProperty("callback")) {
+            callback = window;
+            var parts = triggers[i].properties.callback.split(".");
+            for (var i2 in parts) {
+                if (callback.hasOwnProperty(parts[i2])) {
+                    callback = callback[parts[i2]];
+                } else {
+                    callback = null;
+                    console.warn("Trigger callback not found: " + parts[i2]);
+                    break;
+                }
+            }
+            trigger.callback = callback;
+        }
+
+        this.triggers.push(trigger);
+
         if (triggers[i].hasOwnProperty("name") && triggers[i].name) {
             if (this.triggerNames.hasOwnProperty(triggers[i].name)) {
                 console.warn("Duplicate trigger name: " + triggers[i].name + "\ngetTriggerByName will fail!");

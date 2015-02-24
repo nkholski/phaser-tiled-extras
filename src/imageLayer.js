@@ -89,7 +89,7 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
                         y: false
                     },
                     alpha: layers[i].opacity,
-                    tint: (layers[i].properties.hasOwnProperty('tint')) ? layers[i].properties.tint : 16777215,
+                    tint: (layers[i].properties.hasOwnProperty('tint')) ? parseInt((layers[i].properties.tint).replace("#",""),16) : 16777215,
                     scale: {
                         x: 1,
                         y: 1
