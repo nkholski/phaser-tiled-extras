@@ -20,11 +20,15 @@ Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
      * Update loop for Triggers and imageLayers with parallax or velocity support.
      *
      */
+    if (!this.map) {
+        return;
+    }
+
     var map = this.map;
 
     if (map.hasOwnProperty("triggers")) {
         for (var i in map.triggers) {
-            if (map.triggers[i].enabled && map.triggers[i].callback) {
+            if (map.triggers[i].enabled && map.triggers[i].callback && map.triggers[i].trigged) {
                 map.triggers[i].callback(map.triggers[i], null, true);
             }
             map.triggers[i]._resetEndorsers = true;
@@ -34,7 +38,9 @@ Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
 
 
         for (var i in map.imageLayers) {
-            if(map.imageLayers[i].type == 0){continue;}
+            if (map.imageLayers[i].type == 0) {
+                continue;
+            }
             map.imageLayers[i].tilePostionOffset.x += map.imageLayers[i].velocity.x * this.game.time.physicsElapsed;
             map.imageLayers[i].tilePostionOffset.y += map.imageLayers[i].velocity.y * this.game.time.physicsElapsed;
 
@@ -61,18 +67,18 @@ Phaser.Plugin.TiledExtras.prototype.render = function() {
     }
     //console.log("hej");
     for (var i in this.map.triggers) {
-    //    console.log(this.map.triggers[i]);
-    color = 'rgba(100,100,255,0.9)';
-    if(this.map.triggers[i].trigged){
-        color = 'rgba(255,100,100,0.9)';
-    }
+        //    console.log(this.map.triggers[i]);
+        color = 'rgba(100,100,255,0.9)';
+        if (this.map.triggers[i].trigged) {
+            color = 'rgba(255,100,100,0.9)';
+        }
 
         game.debug.geom({
             x: this.map.triggers[i].area.x,
             y: this.map.triggers[i].area.y,
             width: this.map.triggers[i].area.width,
             height: this.map.triggers[i].area.height
-        }, color , this.map.triggers[i].enabled, 1);
+        }, color, this.map.triggers[i].enabled, 1);
 
     }
 }
@@ -140,7 +146,7 @@ Phaser.Tilemap.prototype.tilePropertyToGid = function(value, property) {
     return false;
 };
 
-Phaser.TilemapLayer.prototype.setCollisionArea = function(collision, area){
+Phaser.TilemapLayer.prototype.setCollisionArea = function(collision, area) {
     // Overrides all settings - set collisions where tile !== null
     // Collision = {collideUp etc}
     if (area) {
@@ -164,12 +170,12 @@ Phaser.TilemapLayer.prototype.setCollisionArea = function(collision, area){
             tile.collideUp = true;
             tile.collideRight = true;
             tile.collideDown = true;
-            tile.collideLeft =true;
+            tile.collideLeft = true;
             tile.collides = true;
             tile.faceTop = true;
             tile.faceRight = true;
             tile.faceBottom = true;
-            tile.faceLeft =true;
+            tile.faceLeft = true;
         }
     }
 }

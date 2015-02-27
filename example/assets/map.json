@@ -326,7 +326,7 @@
              "80":
                 {
                  "alpha":"1",
-                 "callback":"console.log",
+                 "callback":"tileCallbacks.cloud",
                  "collideAll":"true"
                 },
              "81":

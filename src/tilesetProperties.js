@@ -111,6 +111,8 @@ Phaser.TilemapLayer.prototype.updateCollision = function(area, clear) {
                     }
                 }
                 tile.collisionCallback = callback;
+                /*tile.callback = callback;
+                tile.collisionCallback = function(){this.callback(); console.log("dubbel callback!");}; <-- MED BIND*/
             }
         }
     }

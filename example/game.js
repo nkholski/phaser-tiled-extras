@@ -313,3 +313,9 @@ var myTriggers = {
         }
     }
 }
+
+var tileCallbacks = {
+    cloud: function(){
+        console.log("Cloudy!");
+    }
+}
