@@ -89,7 +89,7 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
                         y: false
                     },
                     alpha: layers[i].opacity,
-                    tint: (layers[i].properties.hasOwnProperty('tint')) ? parseInt((layers[i].properties.tint).replace("#",""),16) : 16777215,
+                    tint: (layers[i].properties.hasOwnProperty('tint')) ? parseInt((layers[i].properties.tint).replace("#", ""), 16) : 16777215,
                     scale: {
                         x: 1,
                         y: 1
@@ -203,192 +203,6 @@ Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
     }
 };
 
-Phaser.Tilemap.prototype.getImageLayerByName = function(layerName) {
-  /**
-  * Takes a imageLayer name as set as name property in Tiled and return corresponding tileSprite or null if nothing is found.
-  * @param {string} [name=null] - Name of imageLayer set in Tiled.
-  *
-  */
-    for (var i in this.imageLayers) {
-        if (this.imageLayers[i].name === layerName) {
-            return this.imageLayers[i];
-        }
-    }
-    return null;
-};
-
-
-Phaser.Tilemap.prototype.addImageLayer = function(layerName, definedImageKey) {
-  /**
-  * Loads one or all imageLayers and applies defined properties on it.
-  * @param {string} [layerName=null] - Name of imageLayer as set in Tiled. If omitted, all layers will be loaded.
-  * @param {string} [definedImageKey=null] - Name of imageKey to use. If omitted, properties.key set in Tiled, imageKey matching layer name and image layer file name matching cached image file name will be loaded, in that order. Recommended to ommit.
-  *
-  * TODO: Sprites instead of TileSprites when possible?
-  */
-    this.setCurrentMap();
-    var imageKey, image, object;
-    var layers = this.game.cache._tilemaps[this.key].data.layers;
-    var game = this.game;
-    var tileSpriteArray = []; // Return value
-
-    if (!this.hasOwnProperty("imageLayers")) {
-        this.imageLayers = [];
-    }
-
-    for (var i in layers) {
-        if (layers[i].type === "imagelayer") { // Better to check map.images???
-            if(!layers[i].hasOwnProperty("properties")){layers[i].properties={};}
-            if (!layerName || layerName === layers[i].name) {
-                if (definedImageKey) {
-                    imageKey = definedImageKey;
-                } else {
-                    // 1. Check if properties.key exists
-                    if (layers[i].properties.hasOwnProperty("key")) {
-                        imageKey = layers[i].properties.key;
-                    }
-                    else {
-                        // 3. Check if image filename === layer image filename (UNTESTED)
-                        var keys = Object.keys(game.cache._images);
-                        for (var i2 in keys) {
-                            if (keys[i2] === "__default" || keys[i2] === "__missing") {
-                                continue;
-                            }
-                            if (game.cache._images[keys[i2]].url.indexOf("/" + layers[i].image) > 0) {
-                                imageKey = keys[i2];
-                                continue;
-                            }
-                        }
-                    }
-
-                }
-                if (!imageKey) {
-                    console.warn("Couldn't decide imageKey!");
-                    continue;
-                }
-                if (game.cache._images.hasOwnProperty(imageKey)) {
-                    image = game.cache._images[imageKey];
-                } else {
-                    console.warn("No image with key:" + imageKey);
-                    continue;
-                }
-
-                object = game.add.tileSprite(layers[i].x, layers[i].y, image.data.width, image.data.height, imageKey);
-
-                object.posFixedToCamera = {
-                    x: false,
-                    y: false
-                };
-                object.relativePosition = {
-                    x: object.x,
-                    y: object.y
-                };
-
-                // TODO: Strech = repeat ==> Doesn't move other side but streches Image-size
-                //                scale ==> -"-, but scales the containing Image
-                //                none ==> default (move image) as below:
-                if (layers[i].properties.hasOwnProperty('bottom')) {
-                    object.y = this.heightInPixels - image.data.height + parseInt(layers[i].properties.bottom, 10);
-                }
-                else if (layers[i].properties.hasOwnProperty('top')) { // Untested
-                    object.y = parseInt(layers[i].properties.top, 10);
-                }
-                if (layers[i].properties.hasOwnProperty('right')) { // Untested
-                    object.x = this.widthInPixels - image.data.width + parseInt(layers[i].properties.right, 10);
-                }
-                if (layers[i].properties.hasOwnProperty('left')) { // Untested
-                    object.y = parseInt(layers[i].properties.left, 10);
-                }
-
-                if (layers[i].properties.hasOwnProperty('repeat') && layers[i].properties.repeat == "true") {
-                    object.x = 0;
-                    object.y = 0;
-                    object.width = game.width;
-                    object.height = game.height;
-                    object.posFixedToCamera.x = true;
-                    object.posFixedToCamera.y = true;
-                }
-                if (layers[i].properties.hasOwnProperty('repeat-x') && layers[i].properties["repeat-x"] == "true") {
-                    object.x = 0;
-                    object.width = game.width;
-                    object.posFixedToCamera.x = true;
-                }
-                if (layers[i].properties.hasOwnProperty('repeat-y') && layers[i].properties["repeat-y"] == "true") {
-                    object.y = 0;
-                    object.height = game.height;
-                    object.posFixedToCamera.y = true;
-                }
-
-
-                if (layers[i].properties.hasOwnProperty('tint')) {
-                    object.tint = layers[i].properties.tint;
-                }
-
-                // Flip with Scale<0 not working!
-
-                if (layers[i].properties.hasOwnProperty('scale')) {
-                    object.scale.x = parseFloat(layers[i].properties.scale);
-                    object.scale.y = parseFloat(layers[i].properties.scale);
-                    object.width /= object.scale.x;
-                    object.height /= object.scale.y;
-                }
-                if (layers[i].properties.hasOwnProperty('scale.x')) {
-                    object.scale.x = parseFloat(layers[i].properties["scale.x"],10);
-                }
-                if (layers[i].properties.hasOwnProperty('scale.y')) {
-                    object.scale.y = parseFloat(layers[i].properties["scale.y"],10);
-                }
-                object.displace = {
-                    x: 0,
-                    y: 0
-                };
-                object.velocity = {
-                    x: 0,
-                    y: 0
-                };
-                object.offset = {
-                    x: 0,
-                    y: 0
-                };
-                if (layers[i].properties.hasOwnProperty('velocity')) { // Stupid?!
-                    object.velocity.x = parseFloat(layers[i].properties.velocity);
-                    object.velocity.y = parseFloat(layers[i].properties.velocity);
-                }
-                object.velocity.x = layers[i].properties.hasOwnProperty('velocity.x') ? parseFloat(layers[i].properties["velocity.x"]) : object.velocity.x;
-                object.velocity.y = layers[i].properties.hasOwnProperty('velocity.y') ? parseFloat(layers[i].properties["velocity.y"]) : object.velocity.y;
-
-                object.alpha = layers[i].opacity;
-
-                object.parallax = {
-                    x: 1,
-                    y: 1
-                };
-                if (layers[i].properties.hasOwnProperty('parallax') && parseFloat(layers[i].properties.parallax) > 0) {
-                    object.parallax = {
-                        x: parseFloat(layers[i].properties.parallax),
-                        y: parseFloat(layers[i].properties.parallax)
-                    };
-                }
-
-                if(layers[i].visible === "false"){
-                    object.exists = false;
-                }
-
-                object.name = layers[i].name;
-                tileSpriteArray.push(object);
-                this.imageLayers.push(object);
-            }
-        }
-    }
-    if (tileSpriteArray.length === 0) {
-        return false;
-    } else if (tileSpriteArray.length === 1) {
-        return tileSpriteArray[0];
-    } else {
-        return tileSpriteArray;
-    }
-};
-
 Phaser.Plugin.TiledExtras = function(game, parent) {
     /**
      *
@@ -411,21 +225,27 @@ Phaser.Plugin.TiledExtras.prototype.postUpdate = function() {
      * Update loop for Triggers and imageLayers with parallax or velocity support.
      *
      */
+    if (!this.map) {
+        return;
+    }
+
     var map = this.map;
 
     if (map.hasOwnProperty("triggers")) {
         for (var i in map.triggers) {
-            if (map.triggers[i].enabled && map.triggers[i].callback) {
+            if (map.triggers[i].enabled && map.triggers[i].callback && map.triggers[i].trigged) {
                 map.triggers[i].callback(map.triggers[i], null, true);
             }
-            map.triggers[i].newLoop = true;
+            map.triggers[i]._resetEndorsers = true;
         }
     }
     if (map.hasOwnProperty("imageLayers")) {
 
 
         for (var i in map.imageLayers) {
-            if(map.imageLayers[i].type == 0){continue;}
+            if (map.imageLayers[i].type == 0) {
+                continue;
+            }
             map.imageLayers[i].tilePostionOffset.x += map.imageLayers[i].velocity.x * this.game.time.physicsElapsed;
             map.imageLayers[i].tilePostionOffset.y += map.imageLayers[i].velocity.y * this.game.time.physicsElapsed;
 
@@ -452,18 +272,18 @@ Phaser.Plugin.TiledExtras.prototype.render = function() {
     }
     //console.log("hej");
     for (var i in this.map.triggers) {
-    //    console.log(this.map.triggers[i]);
-    color = 'rgba(100,100,255,0.9)';
-    if(this.map.triggers[i].trigged){
-        color = 'rgba(255,100,100,0.9)';
-    }
+        //    console.log(this.map.triggers[i]);
+        color = 'rgba(100,100,255,0.9)';
+        if (this.map.triggers[i].trigged) {
+            color = 'rgba(255,100,100,0.9)';
+        }
 
         game.debug.geom({
             x: this.map.triggers[i].area.x,
             y: this.map.triggers[i].area.y,
             width: this.map.triggers[i].area.width,
             height: this.map.triggers[i].area.height
-        }, color , this.map.triggers[i].enabled, 1);
+        }, color, this.map.triggers[i].enabled, 1);
 
     }
 }
@@ -531,7 +351,7 @@ Phaser.Tilemap.prototype.tilePropertyToGid = function(value, property) {
     return false;
 };
 
-Phaser.TilemapLayer.prototype.setCollisionArea = function(collision, area){
+Phaser.TilemapLayer.prototype.setCollisionArea = function(collision, area) {
     // Overrides all settings - set collisions where tile !== null
     // Collision = {collideUp etc}
     if (area) {
@@ -555,15 +375,24 @@ Phaser.TilemapLayer.prototype.setCollisionArea = function(collision, area){
             tile.collideUp = true;
             tile.collideRight = true;
             tile.collideDown = true;
-            tile.collideLeft =true;
+            tile.collideLeft = true;
             tile.collides = true;
             tile.faceTop = true;
             tile.faceRight = true;
             tile.faceBottom = true;
-            tile.faceLeft =true;
+            tile.faceLeft = true;
         }
     }
 }
+
+/*
+Todo
+alpha
+properties
+collisionCallback
+
+updateCollision --> parseTileProperties(area,collision(bool),alpha(bool),callback(bool),clear(bool, clears any that is set to true))
+*/
 
 Phaser.TilemapLayer.prototype.updateCollision = function(area, clear) {
     /**
@@ -609,10 +438,6 @@ Phaser.TilemapLayer.prototype.updateCollision = function(area, clear) {
                 tile.collideDown = false;
                 tile.collideLeft = false;
                 tile.collides = false;
-                tile.faceTop = false;
-                tile.faceRight = false;
-                tile.faceBottom = false;
-                tile.faceLeft = false;
                 continue;
             }
 
@@ -622,7 +447,7 @@ Phaser.TilemapLayer.prototype.updateCollision = function(area, clear) {
 
             for (var i = 0; i < 4; i++) {
                 if (tile.properties.hasOwnProperty("collide" + dirs[i])) {
-                    if (tile.properties["collide" + dirs[i]] === "true") {
+                    if (tile.properties["collide" + dirs[i]] === "true") { // Clean up tile.properties?
                         tempCol[i] = true;
                     } else {
                         tempCol[i] = false;
@@ -653,6 +478,29 @@ Phaser.TilemapLayer.prototype.updateCollision = function(area, clear) {
             tile.collideDown = tempCol[2];
             tile.collideLeft = tempCol[3];
             tile.collides = tempCol[0] || tempCol[1] || tempCol[2] || tempCol[3];
+
+            if(tile.properties.hasOwnProperty("alpha")){
+              tile.alpha = parseFloat(tile.properties.alpha);
+            }
+
+            // Fix callback
+            var callback = null;
+            if (tile.properties.hasOwnProperty("callback")) {
+                callback = window;
+                var parts = tile.properties.callback.split(".");
+                for (var i2 in parts) {
+                    if (callback[parts[i2]] != "undefined") {
+                        callback = callback[parts[i2]];
+                    } else {
+                        callback = null;
+                        console.warn("Tile callback not found: " + parts[i2]);
+                        break;
+                    }
+                }
+                tile.collisionCallback = callback;
+                /*tile.callback = callback;
+                tile.collisionCallback = function(){this.callback(); console.log("dubbel callback!");}; <-- MED BIND*/
+            }
         }
     }
     this.map.calculateFaces(this.index);
@@ -750,10 +598,10 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
 
             }
 
-            if (this.triggers[i].newLoop) {
+            if (this.triggers[i]._resetEndorsers) {
                 this.triggers[i].wasTrigged = this.triggers[i].trigged;
                 this.triggers[i].endorsers = [];
-                this.triggers[i].newLoop = false;
+                this.triggers[i]._resetEndorsers = false;
             }
 
             // detectAnchorOnly, Quicker
@@ -815,9 +663,9 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
     this.triggers = [];
     this.triggerNames = [];
 
-    var triggers = this.objects.triggers,
-        args, argNames, forbidden = null,
-        required = null;
+    var triggers = this.objects.triggers;
+    var args, argNames;
+    var required = null;
 
     for (var i = 0, len = triggers.length; i < len; i++) {
         args = {};
@@ -842,7 +690,7 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
             detectAnchorOnly: triggers[i].properties.detectAnchorOnly,
             required: null,
             _resetEndorsers: true
-        }
+        };
 
         // Custom arguments
         for (var i2 in argNames) {
@@ -861,14 +709,14 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
                 }
             }
             if (operators[i2]) {
-                required = triggers[i].properties.required.split(operators[i2]); // <= >= === == = < > !=
-                required[1] = required[1].replace(/\"/g, "").replace(/\'/g, "")
-                if (parseFloat(required[1]) == required[1]) { // Floats should be floats...
-                    required[1] = parseFloat(required[1])
+                required = triggers[i].properties.required.split(operators[i2]);
+                required[1] = required[1].replace(/\"/g, "").replace(/\'/g, "").replace(/\=\=\=/g, "==");
+                if (parseFloat(required[1]) == required[1]) { // Floats will be floats...
+                    required[1] = parseFloat(required[1]);
                 }
                 trigger.required = {
                     property: required[0],
-                    operator: operators[i2],
+                    operator: operators[i2], // Supported: <= >= == < > !=
                     value: (required[1] === "true") ? true : ((required[1] === "false") ? false : required[1])
                 };
             }
@@ -889,7 +737,7 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
             callback = window;
             var parts = triggers[i].properties.callback.split(".");
             for (var i2 in parts) {
-                if (callback.hasOwnProperty(parts[i2])) {
+                if (callback[parts[i2]] != "undefined") { // WAS: callback.hasOwnProperty(parts[i2])
                     callback = callback[parts[i2]];
                 } else {
                     callback = null;

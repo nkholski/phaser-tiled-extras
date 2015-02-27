@@ -136,10 +136,10 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
 
             }
 
-            if (this.triggers[i].newLoop) {
+            if (this.triggers[i]._resetEndorsers) {
                 this.triggers[i].wasTrigged = this.triggers[i].trigged;
                 this.triggers[i].endorsers = [];
-                this.triggers[i].newLoop = false;
+                this.triggers[i]._resetEndorsers = false;
             }
 
             // detectAnchorOnly, Quicker
@@ -201,9 +201,9 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
     this.triggers = [];
     this.triggerNames = [];
 
-    var triggers = this.objects.triggers,
-        args, argNames, forbidden = null,
-        required = null;
+    var triggers = this.objects.triggers;
+    var args, argNames;
+    var required = null;
 
     for (var i = 0, len = triggers.length; i < len; i++) {
         args = {};
@@ -228,7 +228,7 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
             detectAnchorOnly: triggers[i].properties.detectAnchorOnly,
             required: null,
             _resetEndorsers: true
-        }
+        };
 
         // Custom arguments
         for (var i2 in argNames) {
@@ -247,14 +247,14 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
                 }
             }
             if (operators[i2]) {
-                required = triggers[i].properties.required.split(operators[i2]); // <= >= === == = < > !=
-                required[1] = required[1].replace(/\"/g, "").replace(/\'/g, "")
-                if (parseFloat(required[1]) == required[1]) { // Floats should be floats...
-                    required[1] = parseFloat(required[1])
+                required = triggers[i].properties.required.split(operators[i2]);
+                required[1] = required[1].replace(/\"/g, "").replace(/\'/g, "").replace(/\=\=\=/g, "==");
+                if (parseFloat(required[1]) == required[1]) { // Floats will be floats...
+                    required[1] = parseFloat(required[1]);
                 }
                 trigger.required = {
                     property: required[0],
-                    operator: operators[i2],
+                    operator: operators[i2], // Supported: <= >= == < > !=
                     value: (required[1] === "true") ? true : ((required[1] === "false") ? false : required[1])
                 };
             }
@@ -275,7 +275,7 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
             callback = window;
             var parts = triggers[i].properties.callback.split(".");
             for (var i2 in parts) {
-                if (callback.hasOwnProperty(parts[i2])) {
+                if (callback[parts[i2]] != "undefined") { // WAS: callback.hasOwnProperty(parts[i2])
                     callback = callback[parts[i2]];
                 } else {
                     callback = null;
