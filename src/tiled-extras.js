@@ -179,3 +179,118 @@ Phaser.TilemapLayer.prototype.setCollisionArea = function(collision, area) {
         }
     }
 }
+
+/*Phaser.Loader.prototype.tilemapAndImages = function(key, url, data, format) {
+    var loader = game.load.tilemap(key, url, data, format);
+    game.load.onFileComplete.add(fileComplete, this);
+
+
+
+    console.log(loader);
+    while (loader._filelist.length > 0) {
+        for (var i in loader._filelist) {
+            if (loader._filelist[i].key === key) {
+                var loadMap = loader._filelist[i];
+                break;
+            }
+        }
+    }
+    console.log(loadMap);
+
+    debugger;
+    return;*/
+
+Phaser.Loader.prototype.tilemapImages = function(mapKey) {
+    var mapKeyConfirmed = false;
+    var uglyHackIndex;
+
+    // Make sure that the map is loaded! Otherwise stop up the loading cue and wait...
+    if (typeof(mapKey) === "number") {
+        for (var i = 0; i < this._fileList.length; i++) {
+            if (this._fileList[i].type === "tilemapImages") {
+                if (this.game.cache._tilemaps[this._fileList[i].key]) {
+                    var mapKeyConfirmed = true;
+                    mapKey = this._fileList[i].key;
+                    uglyHackIndex = i;
+                    break;
+                }
+            }
+        }
+    } else {
+        // Two kind of hackish lines to make Phaser wait for the loader...:
+        this._fileList.push({
+            key: mapKey,
+            loading: false,
+            loaded: false,
+            type: 'tilemapImages'
+        });
+        uglyHackIndex = this._fileList.length-1;
+        this._totalFileCount++;
+        if (!this.game.cache._tilemaps.hasOwnProperty(mapKey)) {
+            game.load.onFileComplete.add(this.tilemapImages, this);
+            return;
+        }
+        mapKeyConfirmed = true;
+    }
+    if(!mapKeyConfirmed){
+      return;
+    }
+    var cachedMapData = this.game.cache._tilemaps[mapKey];
+    var imageList = [];
+    var tmpObj = {};
+    var mapPath;
+    var existingKeys = Object.keys(this.game.cache._images);
+
+    game.load.tilemap('map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON);
+
+    if (!cachedMapData) {
+        console.error("Something went horribly wrong in Phaser.Tilemap.loadAllImages!");
+        return;
+    } else {
+        mapPath = (cachedMapData.url).match(/.*\//)[0];
+        cachedMapData = cachedMapData.data;
+    }
+
+    // Loop tilesets
+    for (var i in cachedMapData.tilesets) {
+        tmpObj = {};
+        tmpObj.image = cachedMapData.tilesets[i].image;
+        tmpObj.imageKey = (cachedMapData.tilesets[i].properties.hasOwnProperty("key")) ? cachedMapData.tilesets[i].properties.key : cachedMapData.tilesets[i].name;
+        imageList.push(tmpObj);
+    }
+    // Loop images
+    for (var i in cachedMapData.layers) {
+        if (cachedMapData.layers[i].type != "imagelayer") {
+            continue;
+        }
+        tmpObj = {};
+        tmpObj.image = cachedMapData.layers[i].image;
+        tmpObj.imageKey = (cachedMapData.layers[i].properties.hasOwnProperty("key")) ? cachedMapData.layers[i].properties.key : cachedMapData.layers[i].name;
+        imageList.push(tmpObj);
+    }
+    // Load images
+    for (var i in imageList) {
+        var exists = false;
+        imageList[i].image = mapPath + imageList[i].image;
+        // Fix ".." in url. ALLOWS url starting with ".." without checking if its possible.
+        while (imageList[i].image.indexOf("..") > 0) {
+            imageList[i].image = imageList[i].image.replace(/([^\/\.]*?\/\.\.\/)/, "");
+        }
+        for (var i2 in existingKeys) {
+            if (this.game.cache._images[existingKeys[i2]].url === imageList[i].image) {
+                exists = true;
+                continue;
+            }
+        }
+        if (exists) {
+            continue;
+        }
+        if (existingKeys.indexOf(imageList[i].imageKey) > 0) {
+            console.warn("Conflicting key. Key already exists:" + imageList[i].imageKey);
+            continue;
+        }
+        game.load.image(imageList[i].imageKey, imageList[i].image);
+    }
+    this._fileList.splice(uglyHackIndex, 1);
+    this._totalFileCount--;
+}

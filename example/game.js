@@ -9,10 +9,11 @@ function preload() {
     game.scale.scaleMode = Phaser.ScaleManager.NONE; //Phaser.ScaleManager.SHOW_ALL;
     game.load.atlas('mario', 'assets/spritesheet.png', 'assets/spritesheet.json');
     game.load.tilemap('map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON);
-    game.load.image('tileset', 'assets/tileset.png');
+    game.load.tilemapImages('map'); // Kind of neat, skipped below:
+    /*game.load.image('tileset', 'assets/tileset.png');
     game.load.image('marioClouds', 'assets/Mario_Clouds_small.png');
     game.load.image('motherBrain', 'assets/motherBrain.png');
-    game.load.image('background', 'assets/background.png');
+    game.load.image('background', 'assets/background.png');*/
 }
 
 var mario;
