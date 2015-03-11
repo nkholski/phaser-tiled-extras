@@ -320,7 +320,6 @@ Phaser.Tilemap.prototype.setCollisionLayer = function(collisionLayerName, group)
   // Loop all layers to find collisions
   for(var i in this.layers){
     if(i==colLayerIndex){continue;}
-    console.log(i)
     for(var x=0; x<this.layers[i].width; x++){
       for(var y=0; y<this.layers[i].height; y++){
         //console.log(x+"  "+y)
