@@ -217,7 +217,7 @@ Phaser.Loader.prototype.tilemapImages = function(mapKey) {
             }
         }
     } else {
-        // Two kind of hackish lines to make Phaser wait for the loader...:
+        // Two kind of hackish lines to make Phaser wait for the loader. Phaser will keep it in fileList and fail to catch it when processing the cue over and over until this function simply removes it from the list again.
         this._fileList.push({
             key: mapKey,
             loading: false,
@@ -240,8 +240,6 @@ Phaser.Loader.prototype.tilemapImages = function(mapKey) {
     var tmpObj = {};
     var mapPath;
     var existingKeys = Object.keys(this.game.cache._images);
-
-    game.load.tilemap('map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON);
 
     if (!cachedMapData) {
         console.error("Something went horribly wrong in Phaser.Tilemap.loadAllImages!");
@@ -272,7 +270,7 @@ Phaser.Loader.prototype.tilemapImages = function(mapKey) {
     for (var i in imageList) {
         var exists = false;
         imageList[i].image = mapPath + imageList[i].image;
-        // Fix ".." in url. ALLOWS url starting with ".." without checking if its possible.
+        // Fix ".." in url (folder1/folder2/../folder3/image.png ==> folder1/folder3/image.png). ALLOWS url starting with ".." if someone for some reason keep their html-file inside a subfolder and the assets somewhere before that.
         while (imageList[i].image.indexOf("..") > 0) {
             imageList[i].image = imageList[i].image.replace(/([^\/\.]*?\/\.\.\/)/, "");
         }
@@ -293,4 +291,51 @@ Phaser.Loader.prototype.tilemapImages = function(mapKey) {
     }
     this._fileList.splice(uglyHackIndex, 1);
     this._totalFileCount--;
+}
+
+Phaser.Tilemap.prototype.setCollisionLayer = function(collisionLayerName, group){
+  var collisionLayerName = collisionLayerName ? collisionLayerName : "collisionLayer";
+  var colLayerIndex = this.getLayerIndex(collisionLayerName);
+  var collisionLayer = null;
+  var colTile, tile;
+
+  if(!colLayerIndex){
+    collisionLayer = this.createBlankLayer(collisionLayerName, this.width, this.height, this.tileWidth, this.tileHeight, group);
+    colLayerIndex = this.getLayerIndex(collisionLayerName);
+    collisionLayer.visible = false;
+  }
+
+  for(var x=0; x<this.layers[colLayerIndex].width; x++){
+    for(var y=0; y<this.layers[colLayerIndex].height; y++){
+      //console.log(collisionLayerName);
+      this.putTile(1, x, y, collisionLayerName);
+      colTile = this.getTile(x, y, collisionLayerName);
+      colTile.collideUp = false;
+      colTile.collideRight = false;
+      colTile.collideDown = false;
+      colTile.collideLeft = false;
+      colTile.collides = false;
+    }
+  }
+  // Loop all layers to find collisions
+  for(var i in this.layers){
+    if(i==colLayerIndex){continue;}
+    console.log(i)
+    for(var x=0; x<this.layers[i].width; x++){
+      for(var y=0; y<this.layers[i].height; y++){
+        //console.log(x+"  "+y)
+        tile = this.getTile(x,y, this.layers[i].name);
+        if(!tile){continue;}
+        colTile = this.getTile(x, y, collisionLayerName);
+        colTile.collideUp = tile.collideUp ? true : colTile.collideUp;
+        colTile.collideRight = tile.collideRight ? true : colTile.collideRight;
+        colTile.collideDown = tile.collideDown ? true : colTile.collideDown;
+        colTile.collideLeft = tile.collideLeft ? true : colTile.collideLeft;
+        colTile.collides = tile.collides ? true : colTile.collides;
+      }
+    }
+  }
+  // Fix faces
+  this.calculateFaces(colLayerIndex);
+  return collisionLayer ? collisionLayer : null;
 }
