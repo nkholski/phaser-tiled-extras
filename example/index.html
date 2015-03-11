@@ -42,19 +42,20 @@
             <b>Image layers</b>
             <br>
             <ul>
-                <li>Two cloud layers with the same image but with different opacity/alpha, parallax ratio, scale and velocity set in properties. (The wavy movement is done with at tween from the game)</li>
-                <li>The background layer is locked vertically but is repeating horizontally with a parallax ratio set in properties.</li>
-                <li>One layer iImage with opacity/alpha set to 0. A trigger may set it to alpha = 1.</li>
+                <li>The two cloud layers are using the same image but has different opacity/alpha, parallax ratio, scale and velocity set in properties in Tiled. (The wavy movement is done with at tween from the game)</li>
+                <li>The SMB3-boxy-background-layer is locked to it's coordinates vertically but is repeated horizontally with a parallax ratio, all configured by properties in Tiled.</li>
+                <li>There is one invisible layer (opacity/alpha set to 0). A trigger can set it to alpha = 1.</li>
             </ul>
             <b>Triggers</b>
             <ul>
-                <li>If exactly two objects stays the area under the "cloud box", coins will show up (try to push the blocks!). If the test fails, the coins will go away again.</li>
+                <li>If exactly two objects stays the area under the "cloud box", coins will show up above (try to push the blocks!). If the test fails (less or more than 2 objects), the coins will go away again.</li>
                 <li>If you jump clockwise a few times around the block to the left of Mario at the starting position, something will happen. If you break the loop you'll have to start over.</li>
             </ul>
             <b>Collision set by tile properties</b>
             <ul>
                 <li>All collision data are defined by tile properties.</li>
-                <li>The animated arrows cannot be passed against the direction of the arrow (the collision information properties are manipulated by the rotation/flipping of the sprite)</li>
+                <li>A collison layer with all layers' collision data combined is created by Phaser.Tilemap.prototype.setCollisionLayer. (There is only one layer with collision data from the beginning as well, but you get the idea...)</li>
+                <li>The animated arrows cannot be passed against the direction of the arrow. This is set as tile properties in Tiled, and the collision data will adapt if a tile is rotated/flipped.</li>
             </ul>
             <b>Animated tiles</b>
             A fork allowing animated tiles is used for the demo. If the pull-request for this feature to Phaser is denied, the feature will be added to this plugin instead.

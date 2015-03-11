@@ -99,13 +99,14 @@ function create() {
         y: 15
     }, 2000, Phaser.Easing.Sinusoidal.InOut, true, 0, 1000, true);
 
+    collisionLayer = map.setCollisionLayer();
 }
 
 function update() {
 
     this.physics.arcade.collide(spriteGroup, spriteGroup);
 
-    this.physics.arcade.collide(spriteGroup, layers[0]);
+    this.physics.arcade.collide(spriteGroup, collisionLayer);
 
     //  this.physics.arcade.collide(mario, layers[0]);
     if (cursors.left.isDown) {
