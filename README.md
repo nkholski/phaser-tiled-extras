@@ -1,7 +1,5 @@
 # phaser-tiled-extras #
 
-## Warning: The plugin is under development. It's not fit for production use and may break compatibility between updates. ##
-
 This plugin adds additional features from Tiled mapeditor to Phaser 2. Some of them are built-in in Tiled, and others are custom solutions. The aim is to move reusable code from my projects to this plugin. Another aim is to make it integrate to Phaser 2 as seamless as possible with unmodified code. This is experimental at the moment, and ideas are added and removed as I go, so does the solutions.
 
 The plugin will not improve performance. For increased performance (along with additional Tiled features) I recommend the far more advanced plugin Phaser-Tiled: https://github.com/englercj/phaser-tiled.

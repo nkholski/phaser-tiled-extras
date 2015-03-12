@@ -304,7 +304,7 @@ Phaser.Tilemap.prototype.setCollisionLayer = function(collisionLayerName, group)
     colLayerIndex = this.getLayerIndex(collisionLayerName);
     collisionLayer.visible = false;
   }
-
+  // Prepare the collision layer
   for(var x=0; x<this.layers[colLayerIndex].width; x++){
     for(var y=0; y<this.layers[colLayerIndex].height; y++){
       //console.log(collisionLayerName);
@@ -334,7 +334,18 @@ Phaser.Tilemap.prototype.setCollisionLayer = function(collisionLayerName, group)
       }
     }
   }
+  // Set all non-collision tiles to null (save some ram and probably perfomance)
+  for(var x=0; x<this.layers[colLayerIndex].width; x++){
+      for(var y=0; y<this.layers[colLayerIndex].height; y++){
+          colTile = this.getTile(x, y, collisionLayerName);
+          if(!colTile.collideUp && !colTile.collideDown && !colTile.collideLeft && !colTile.collideRight){
+              this.putTile(null, x, y, collisionLayerName);
+          }
+      }
+  }
+
   // Fix faces
   this.calculateFaces(colLayerIndex);
+
   return collisionLayer ? collisionLayer : null;
 }
