@@ -209,6 +209,9 @@ Phaser.Tilemap.prototype.defineTriggers = function() {
         args = {};
         argNames = Object.keys(triggers[i].properties);
 
+        triggers[i].x = (typeof(triggers[i].x)==="undefined") ? 0:triggers[i].x; // Tiled wont set any x-value if x==0. x<0 is OK.
+        triggers[i].y = (typeof(triggers[i].y)==="undefined") ? 0:triggers[i].y; // Tiled wont set any y-value if y==0. y<0 is OK.
+
         var trigger = {
             name: (triggers[i].hasOwnProperty("name")) ? triggers[i].name : null,
             enabled: (!triggers[i].properties.hasOwnProperty("enabled") || (triggers[i].properties.enabled !== "true")),

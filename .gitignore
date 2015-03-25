@@ -10,3 +10,5 @@ help.txt
 src/experimental
 src/experimental/**
 phaserBugs.txt
+phaser/**
+phaser

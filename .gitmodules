@@ -1,4 +1,4 @@
-[submodule "phaser"]
-	path = phaser
-	url = https://github.com/photonstorm/phaser.git
-	branch = dev
+#[submodule "phaser"]
+#	path = phaser
+#	url = https://github.com/photonstorm/phaser.git
+#	branch = dev
