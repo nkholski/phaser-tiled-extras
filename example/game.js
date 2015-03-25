@@ -303,13 +303,13 @@ var myTriggers = {
             for (tx = coords[0] - 1; tx < (coords[0] - 1 + coords[2]); tx++) {
                 for (ty = coords[1] - 1; ty < (coords[1] - 1 + coords[3]); ty++) {
                     trigger.originalTile = map.getTile(tx, ty, layers[0]);
-                    map.putTile(21, tx, ty);
+                    map.putTile(21, tx, ty, layers[0]);
                 }
             }
         } else if (!trigger.trigged) {
             for (tx = coords[0] - 1; tx < (coords[0] - 1 + coords[2]); tx++) {
                 for (ty = coords[1] - 1; ty < (coords[1] - 1 + coords[3]); ty++) {
-                    map.putTile(trigger.originalTile, tx, ty);
+                    map.putTile(trigger.originalTile, tx, ty, layers[0]);
                 }
             }
         }
