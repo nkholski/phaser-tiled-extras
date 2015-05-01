@@ -8,7 +8,7 @@ var game = new Phaser.Game(320, 192, Phaser.AUTO, 'phaser-example', {
 function preload() {
     game.scale.scaleMode = Phaser.ScaleManager.NONE; //Phaser.ScaleManager.SHOW_ALL;
     game.load.atlas('mario', 'assets/spritesheet.png', 'assets/spritesheet.json');
-    game.load.tilemap('map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON);
+    game.load.tilemap('map', 'assets/map_debug.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.tilemapImages('map'); // Kind of neat, skipped below:
     /*game.load.image('tileset', 'assets/tileset.png');
     game.load.image('marioClouds', 'assets/Mario_Clouds_small.png');
@@ -43,7 +43,7 @@ function create() {
 
 
     //tiledExtras.updateCollision(layers);
-    map.defineTriggers();
+    map.loadTriggers();
     layers[0].resizeWorld();
 
     //  Convert the tilemap layer into bodies. Only tiles that collide (see above) are created.
@@ -238,7 +238,7 @@ var myTriggers = {
         if (!trigger.trigged) {
             return;
         }
-        switch (trigger.args.direction + myTriggers.clockWiseRunVars.lastDirection) {
+        switch (trigger.arguments.direction + myTriggers.clockWiseRunVars.lastDirection) {
             case "nw":
             case "en":
             case "se":
@@ -256,7 +256,7 @@ var myTriggers = {
                 // moving in the wrong direction
                 myTriggers.clockWiseRunVars.count = 0;
         }
-        myTriggers.clockWiseRunVars.lastDirection = trigger.args.direction;
+        myTriggers.clockWiseRunVars.lastDirection = trigger.arguments.direction;
 
         if (myTriggers.clockWiseRunVars.count > 6) {
             game.add.tween(map.getImageLayerByName("motherBrain")).to({
@@ -295,7 +295,7 @@ var myTriggers = {
         }
 
         // box was set as property in Tiled
-        var coords = map.triggers[0].args.box.split(",");
+        var coords = map.triggers[0].arguments.box.split(",");
         coords = coords.map(function(x) {
             return parseInt(x, 10);
         });
