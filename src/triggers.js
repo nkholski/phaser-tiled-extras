@@ -1,11 +1,36 @@
-//
-// Skapa Phaser.Trigger som anropas både vid skapad från tilemap oc från kod
+'use stict';
+
+/**
+* @author       Niklas Berg <emailto@niklasberg.se>
+* @copyright    2015 Niklas Berg.
+* @license      MIT
+*/
+
+/**
+* Phaser Triggers
+*
+* Adds triggers to Phaser 2.x.
+*
+*/
 
 
-Phaser.Trigger = function(map, x, y, width, height, key, callback, arguments) {
+/*
+* A trigger is connected to specific tilemap. It may be loaded from tilemap data (Phaser.Tilemap.loadTriggers) or added programatically.
+*
+* @class Phaser.Trigger
+* @constructor
+* @param {object} map  - The map that trigger tile belongs to.
+* @param {number} x - The x coordinate of the trigger (far left part of the area).
+* @param {number} y - The y coordinate of the trigger (top part of the area).
+* @param {number} width - Width of the trigger area.
+* @param {number} height - Height of the trigger area.
+* @param {string} key - unique key used to identify the trigger (optional).
+* @param {string or function} callback - callback used by the trigger (optional).
+*/
+
+Phaser.Trigger = function(map, x, y, width, height, key, callback) {
     this.game = map.game;
     this.map = map;
-    console.log(callback);
     if (!map.triggers) {
         map.triggers = [];
     }
@@ -47,7 +72,6 @@ Phaser.Trigger = function(map, x, y, width, height, key, callback, arguments) {
         }
     });
 
-
     this.callback = null;
 
 
@@ -56,7 +80,7 @@ Phaser.Trigger = function(map, x, y, width, height, key, callback, arguments) {
     }
     this.arguments = [];
     if (arguments) {
-        this.setArguments(arguments)
+        this.addArgument(arguments);
 
         var argKeys = Object.keys(arguments);
         for (var i in argKeys) {
@@ -116,18 +140,8 @@ Phaser.Trigger.prototype = {
 
 Phaser.Trigger.prototype.constructor = Phaser.Trigger;
 
-/**
- * @name Phaser.Tile#collides
- * @property {boolean} collides - True if this tile can collide on any of its faces.
- * @readonly
- */
-
-//});
-
-
-
 Phaser.Tilemap.prototype.getTriggerByKey = function(key) {
-    return (key in this.triggerKeys) ? this.triggerKeys[key] : false;
+    return (key in this.triggerKeys) ? this.triggerKeys[key] : null;
 };
 
 Phaser.Tilemap.prototype.checkTriggers = function(object) {
@@ -135,7 +149,6 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
      * Check if object triggers the triggers and calls callbacks.
      * @param {object} [object=null] - Sprite or Group to check.
      *
-     * TODO: Spritetiles? Call for a Phaser.point without graphical object?
      */
     var offset, objectArray, objectBounds;
 
@@ -181,7 +194,7 @@ Phaser.Tilemap.prototype.checkTriggers = function(object) {
                 continue;
             }
 
-            // Check Required
+            // If required is set but not met, no further tests will be made. A cheap possibility to rule out triggers.
             if (this.triggers[i].required) {
                 switch (this.triggers[i].required.operator) {
                     case "==":
@@ -279,7 +292,6 @@ Phaser.Tilemap.prototype.loadTriggers = function(triggerLayer) {
 
     this.setCurrentMap(); //arbeta bort
 
-
     var triggers = this.objects[triggerLayer];
     var args, argKeys;
     var required = null;
@@ -304,27 +316,6 @@ Phaser.Tilemap.prototype.loadTriggers = function(triggerLayer) {
         }
 
         var trigger = new Phaser.Trigger(this, triggers[i].x, triggers[i].y, triggers[i].width, triggers[i].height, triggers[i].properties.key);
-
-        /*        var trigger = {
-                    name: (triggers[i].hasOwnProperty("name")) ? triggers[i].name : null,
-                    enabled: (!triggers[i].properties.hasOwnProperty("enabled") || (triggers[i].properties.enabled !== "true")),
-                    callback: null,
-                    args: [],
-                    area: {
-                        x: triggers[i].x,
-                        y: triggers[i].y,
-                        width: triggers[i].width,
-                        height: triggers[i].height,
-                        right: triggers[i].x + triggers[i].width,
-                        bottom: triggers[i].y + triggers[i].height
-                    },
-                    trigged: false,
-                    wasTrigged: false,
-                    endorsers: [],
-                    detectAnchorOnly: triggers[i].properties.detectAnchorOnly,
-                    required: null,
-                    _resetEndorsers: true
-                };*/
 
         // Custom arguments
         for (var i2 in argKeys) {
